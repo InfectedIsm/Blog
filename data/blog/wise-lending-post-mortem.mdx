@@ -1,0 +1,87 @@
+---
+title: 'Wise Lending Post-Mortem'
+date: '2024-02-25'
+tags: ['hack', 'DeFi', 'post-mortem', 'analysis']
+draft: false
+summary: SUMMARY
+---
+
+# Wise Lending Post-Mortem
+
+![Untitled](/static/images/blog/wise-lending/1-banner.png)
+
+Wise Lending attack led to a $466k loss for the protocol. How did the hacker managed to break the bank here? 
+
+First we need to understand what is Wise Lending and what component got exploited.  Then we will explain how.
+
+So let’s start to break things down!
+
+## Wise Lending
+
+Wise lending allow users to supply various assets to either be borrowed directly through the protocol, or to be invested in various strategies to generate/farm additional yield.
+
+For user to be able deposit their assets, Wise Lending provide them with vaults. This is this component, the vault, that got exploited.
+
+## Vaults
+
+Vaults are a widely used financial component in DeFi, mostly through one of its implementation known as [ERC4626](https://erc4626.info/).
+
+A vault is a contract where users can deposit assets and get granted exchange vault shares, representing how much value from the vault they are entitled. If the vault get to generate profit, there will be an excess of asset (compared to what was deposited), and user will be able to earn part of this profit when redeeming their vault shares (they will receive their deposit + their share of the profit)
+
+Since its inception, ERC4626 has seen diverse and new defensive mechanisms implemented and adopted. The most basic and widespread defense is to round shares/assets in favor of the vault. In simple terms, what is taken from the user should be rounded up, and what is given rounded down.
+
+The second most deployed defensive mechanism is the decimal offset and dead shares deposit. This one was created in response to what is known as the inflation attack, allowing an attacker to steal the full deposit of the first depositor by front-running him with (1) a deposit and (2) a donation. The decimal offset makes this kind of attack unprofitable for the attacker, as demonstrated by @OpenZeppelin in [this very interesting article](https://docs.openzeppelin.com/contracts/4.x/erc4626).
+
+Finally, something that we start to see are vaults internally managing the accounting of the base asset balance rather than depending on the usual `balanceOf` method call (capture of the ERC4626.sol contract from OZ)
+
+![Untitled](/static/images/blog/wise-lending/2-total-assets.png)
+
+The idea is to make it impossible for an attacker to donate tokens to the pool (and thus manipulating this value with no control), which would skew the base asset balance from the share balance (impacting then their exchange rate). 
+
+We call this a donation attack. By donating assets to the vault, the value of the share increases, which then can be problematic if the vault share token is used in another DeFi protocol, as a collateral for example.
+
+By implementing an internal accounting, direct donation (i.e direct transfer of token to the pool address) aren’t anymore accounted as asset held by the vault, making the donation impossible. 
+
+Wise Lending implemented (1) an internal accounting (2) a throttle to limit the quantity of token that can be directly donated to the contract. The (2) allow to account for direct donation if its below a certain value, while still making impossible to donate to an excessive point:
+
+![Untitled](/static/images/blog/wise-lending/3-_cleanUp.png)
+
+## The Exploit
+
+So let’s go straight to the exploit now. What happened to Wise Lending was a donation attack. But not the usual “easy” donation attack.
+
+(1) The attacker first deposited a very small amount of tokens, and donated afterward an amount just below throttle limit. While this was below the limit, the donation was 5.000.000x larger than the initial deposit.
+
+(2) This inflation wasn’t enough to steal a consequent amount of tokens, he needed to donate even more, but the throttle wouldn’t allow him to do so.
+
+The brilliance of the strategy unfolds here: turning the vault's own rounding mechanism against it. This approach essentially enabled the vault to inadvertently facilitate token donations from the attacker. This occurred because the shares credited to the attacker did not correspond with the actual amount of tokens deposited.
+
+If a share is worth 2 tokens (exchange_rate = 2), depositing 3 tokens will mint 1 share because of the rounding down (3/2 = 1.5 ↓= 1). But the vault will add 3 tokens to its balance, which will skew the exchange rate to a higher value of 3 . Then by withdrawing 1 token, the vault will burn 1 share from the user (by rounding up against him, as 1/3 = 0.3 ↑= 1), which will make a final donation of 2 tokens. 
+
+By iterating again and again, the exchange rate grows, making it possible to donate even more each time, until finally reaching a very high price value for the share against the token.
+
+This is exactly what we see in the trace, where in red is shown the exchange rate (4/1) and orange the deposit, which is carefully chosen to donate the maximum while still getting only one share.
+
+![Untitled](/static/images/blog/wise-lending/4-exploit-trace.png)
+
+## Extracting the value
+
+This manipulation only is not sufficient to make a profit. Manipulating a price is usually a first step. By making a share looks like (a lot) more expensive that it really is, it make it possible to use it as collateral to borrow assets in other pools of the lending protocol.
+
+That is what the attacker did. First, he deposited tokens in the manipulated pool to get 6 shares. 
+
+Then he deployed 6 other puppet contracts, all of them depositing enough tokens in the manipulated pool to get 1 share each. 
+
+Next, each of the 6 puppets borrowed as much funds as possible in other pools (USDC, WETH, USDT, DAI, …). thanks to the overly priced share.
+
+Finally, the puppet contracts withdrawn 1 token from the manipulated pool, which burnt their only share (because of the rounding down against user). The puppets were at loss, as their borrow was worth less than what they deposited first (because of the collateralization factor always >100%)
+
+But now, the attacker main contract had all the existing shares of the manipulated pool! So, by burning his 6 shares, he was able to drain the whole pool, while still keeping the borrowed funds as there was no collateral to seize!
+
+## The mistakes
+
+Wise Lending did not implement (1) a dead share, (2) accounted the stealth donation, while it should have discarded it. 
+
+The dead share would have prevented the hacker to own the whole pool, thus preventing him to withdraw its entirety. 
+
+And by discarding the stealth donation, this would have not allowed the hacker to inflate the exchange rate.
