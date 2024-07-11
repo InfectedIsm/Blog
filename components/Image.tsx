@@ -16,7 +16,7 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
           &times;
         </label>
         <div className="lightbox-content">
-          <img src={`${basePath || ''}${src}`} alt={alt} className="h-full max-w-full" />
+          <img src={`${basePath || ''}${src}`} alt={alt} className="max-w-full" />
           <p className="lightbox-alt">{alt}</p>
         </div>
       </div>
