@@ -7,14 +7,16 @@ const basePath = process.env.BASE_PATH
 const Image = ({ src, alt, ...rest }: ImageProps) => {
   return (
     <div>
-      <label htmlFor={`lightbox-${src}`} className="cursor-pointer block">
+      <label htmlFor={`lightbox-${src}`} className="block cursor-pointer">
         <NextImage src={`${basePath || ''}${src}`} alt={alt} {...rest} />
       </label>
       <input type="checkbox" id={`lightbox-${src}`} className="lightbox-toggle" />
       <div className="lightbox">
-        <label htmlFor={`lightbox-${src}`} className="lightbox-close">&times;</label>
+        <label htmlFor={`lightbox-${src}`} className="lightbox-close">
+          &times;
+        </label>
         <div className="lightbox-content">
-          <img src={`${basePath || ''}${src}`} alt={alt} className="max-w-full max-h-full" />
+          <img src={`${basePath || ''}${src}`} alt={alt} className="h-full max-w-full" />
           <p className="lightbox-alt">{alt}</p>
         </div>
       </div>
