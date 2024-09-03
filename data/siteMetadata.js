@@ -1,8 +1,8 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'Another Infected Blog',
+  title: 'An Infected Blog',
   author: 'InfectedCrypto',
-  headerTitle: 'Another Infected Blog',
+  headerTitle: 'An Infected Blog',
   description: 'A blog about web3 security',
   language: 'en-us',
   theme: 'system', // system, dark or light
