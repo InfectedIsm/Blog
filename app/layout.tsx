@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) { // background color here L76
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang={siteMetadata.language}
