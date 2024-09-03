@@ -1,0 +1,105 @@
+---
+title: 'Writing Better Reports Faster'
+date: '2024-07-16'
+tags: ['tips', 'tools', 'contests', 'report']
+draft: false
+summary: Tips to write cool and fancy reports for competitive audit platforms
+---
+
+![cool image showing multiple tools getting out of a chest](/static/images/blog/foundry-tips/chest.png)
+
+If you are you looking for tips on how to make your submission report looks pretty and professional, you found the right article!
+
+Let me share here with you some tips and tools you can use from today to enhance the readability and appearance of your report.
+
+This isn't a post about writing **good**, but **fancy** reports, that is why I will only talk about the form and not the substance of the report.
+
+## Using the right template
+
+First let's start with the obvious. Either you're participating in [Code4rena](https://code4rena.com/audits), [Sherlock](https://www.sherlock.xyz/), [CodeHawks](https://codehawks.cyfrin.io/contests), [Immunefi](https://immunefi.com/), 
+or any other competitive platform, you must respect the template.
+This is important as judges will review hundreds of submissions, you easily understand how this can help them to go faster.
+
+```markdown
+#L/M/H-00 - Description
+
+## Vulnerability details
+
+## Impact
+
+## Proof of Concept
+
+## Tools Used
+Manual review
+
+## Recommended Mitigation Steps
+
+```
+
+A great title to begin your report will help the judge to grasp the core idea, here's an example of good title:  
+"_**[actors]**_ can _**[impact]**_ by _**[condition]**_"  
+
+The title must be short or it will simply lose its purpose.
+
+
+## Copy With Line Number
+
+If you're using VSCode this is a must have for your reports. This allow you to get code snippets along with the line numbers, and file relative path in a click!
+Check my previous post for more informations: https://twitter.com/InfectedCrypto/status/1803420953512206600  
+![](/static/images/blog/foundry-tips/2.png)
+
+Also, you might be interested by the [quick mod](https://gist.github.com/InfectedIsm/27ab29937181919b89589c62c0113db8) I've done to the Copy With Line Number extension to lose even less time
+
+## WeAudit
+This extension developed by [@trailofbits](https://twitter.com/trailofbits) is also a must have for every SR. Among all its functionalities, there is one very practical for reports: you can seamlessly get a link to a specific part of the code!
+
+More informations here: [weAudit Vscode Extension](https://marketplace.visualstudio.com/items?itemName=trailofbits.weaudit)
+
+![](/static/images/blog/foundry-tips/4.png)
+
+
+## Diff blocks
+The recommendation part of the report usually contains a diff of the modification compared to base implementation.
+By reading a lot of reports, I've noticed a lot of people don’t seem to know this exist in the first place.
+By using wrapping your code inside a *\```diff ... ```* code block you'll get these really practical colors:
+
+![](/static/images/blog/foundry-tips/5.png)
+![](/static/images/blog/foundry-tips/6.png)
+
+If you want to make even better diffs, like the one in the screenshot below, you can diff your updated code with the original contest repo by following next steps:
+![](/static/images/blog/foundry-tips/7.png)
+
+Adds the contest remote repository named 'original' (or the name you prefer) with its URL.
+
+```
+git remote add original https://github.com/project/contest-repo.git
+```
+
+Downloads objects and refs from the remote repository
+
+```
+git fetch original
+```
+
+print the diff between original file and your modifications
+```
+git diff original/main -- src/contract.sol
+```
+## Adding images
+
+You can also add images to your submission, to do so, you can use a simple trick.
+Adding an image to a comment/text field in github generate a link to the image (image is hosted on github servers) that you can then use in your submission.
+
+![](/static/images/blog/foundry-tips/9.png)
+![](/static/images/blog/foundry-tips/10.png)
+
+## Github enhanced comments
+
+Finally, to use with moderation as this can make "too much" sometimes, you can try the special github markdown "Alerts" which can highly enhance the readability sometimes!
+
+![](/static/images/blog/foundry-tips/11.png)
+
+
+Well that’s the end. Go write your report now, I bet you have something cooking that might profit from a bit of seasoning 🍜🧂
+
+

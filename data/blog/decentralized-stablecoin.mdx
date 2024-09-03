@@ -1,185 +1,182 @@
 ---
 title: 'Exploring Decentralized Stablecoins: Mechanisms and Vulnerabilities'
-date: '2024-05-10'
+date: '2024-05-19'
 tags: ['stablecoin', 'DeFi', 'checklist']
-draft: true
+draft: false
 summary: In this article I try to cover different type of vulnerabilities that when building or integrating stablecoins
 ---
 
-# THE TEMPLATE by INFECT3D
+![stablecoins from top left to bottom right: Liquity, crvUSD, Frax, MIM, DAI, EthenaUSD, GHO](/static/images/blog/stablecoins/stablecoin-logos-bw.png)
 
 
-## Introduction
+# Table of Content
+- [Introduction](#introduction)
+- [Few words on oracles](#few-words-on-oracles)
+- [Incorrect price feed](#incorrect-price-feed)
+- [Incorrect price value](#incorrect-price-value)
+- [Computation error](#computation-error)
+- [Bad debt and liquidation issues](#bad-debt-and-liquidation-issues)
+- [Users can arbitrage stable in pools](#users-can-arbitrage-stable-in-pools)
+- [Using endogenous collateral](#using-endogenous-collateral)
+- [CDP related issues](#cdp-related-issues)
 
-While stablecoins are usually associated with USD, they more broadly represent tokens designed to maintain a stable value relative to a specific asset. This stability is referred to as a stablecoin being pegged to its asset.
+# Introduction
+_"A stablecoin is a cryptocurrency with added economic structure that aims to stabilize price [^1]"_
+[^1]:[While Stability Lasts: A Stochastic Model of Non-Custodial Stablecoins](https://arxiv.org/abs/2004.01304)
+
+While stablecoins are usually associated with USD, they more broadly represent tokens designed to maintain a stable value relative to a specific asset. 
+This stability is referred to as a stablecoin being pegged to its asset. [Hundreds stablecoins have been deployed](https://defillama.com/stablecoins), yet only few of them are really central to the DeFi economy.
 
 Stablecoins fall into two main categories:
 
-1. **centralized stablecoin**, like USDC or USDT which are company holding off-chain assets (usually dollars, treasury bonds, …), allowing users to mint dollars while ensuring they will be able to redeem their stablecoin against the real asset at any time.
-2. **decentralized stablecoin.** These can be algorithmic, backed by on-chain assets, or a mix of both.
+1. **custodial (or centralized) stablecoin**, like USDC or USDT which are company holding off-chain assets (usually fiat, treasury bonds, …),
+ allowing users to mint their token while ensuring they will be able to redeem it against the real asset at any time.
+2. **non-custodial (or decentralized) stablecoin.** These are algorithmic, backed by on-chain assets, which can either be **endogenous or exogenous** (more details below)
 
 In our article, **we will only examine the second category** as it's most relevant to our discussion.
 
-Numerous projects, such as Liquity (LUSD), Maker (DAI), Frax (FRX), and many others are actually attempting to address this complex issue. Each project has its own recipe, some are highly algorithmic, while some other mainly rely on their collateral.
+Numerous projects, such as Liquity (LUSD), Maker (DAI), Frax (FRX), and many others are actually working to address this complex issue.
+Each and every project has its own recipe, where incentives and clever economic mechanism try to maintain the peg.
 
-Now, if we look deeper into the decentralized stablecoin category, we can further identify two types of collateral backing: 
+If we look deeper into the **decentralized** stablecoin category, we can further identify two types of collateral backing: 
 
-- **Endogenous collateral**: Use of native assets of the protocol (e.g., UST using LUNA).
-- **Exogenous collateral**: Use of external assets (e.g., DAI using ETH).
+- **Endogenous collateral**: Use of native assets of the protocol (e.g., UST using LUNA). High reliance on trust and incentives mechanism to achieve equilibrium.
+- **Exogenous collateral**: Use of external assets (e.g., DAI backed by ETH), usually over-collateralized (backing total value > stablecoin total value) to absorb collateral price volatility.
 
-*If you’d like more details, I highly suggest you to read this [great article from Ditto ETH](https://dittoeth.com/blog/exogenous).*
+*If you'd like more details on this topic, I highly suggest you to read this [great article from Ditto ETH](https://dittoeth.com/blog/exogenous).*
 
-Ultimately, a stablecoin protocol's **primary challenge** is to maintain its peg to the asset, which is its main function and the reason people use it. 
+Ultimately, a stablecoin protocol's **primary challenge** is to maintain its peg to the asset, and the reason people trust it and use it.
 
-**Its second challenge** is to prevent malicious actors from extracting value from the users or the protocol by manipulating or exploiting the implemented stability/peg algorithm.
+**The second challenge** is to prevent malicious actors from extracting value from users or protocol itself, which can be achieved by manipulating or exploiting the inner incentive/stability/economic implemented logic.
 
-Our goal through this article will be to:
+To help you achieve this goal of securing your (or your customer's) stablecoin protocol, I will try to:
 
-- Illustrate different ways a stablecoin protocol can be manipulated
-- Explain why this presents a problem
-- Suggest methods to mitigate or prevent these issues
+- Show off different ways a stablecoin protocol can be manipulated/exploited
+- Propose methods to mitigate, prevent or limit these issues
 
+# Few words on oracles
+![Blockchain oracles connect blockchains to inputs and outputs in the real world[^2]](/static/images/blog/stablecoins/oracles.png)
+[^2]:[Blockchain oracles connect blockchains to inputs and outputs in the real world](https://chain.link/education/blockchain-oracles)
 
-## Few words on oracles
+Before diving into the risks and vulnerabilities, we must talk about oracles, as they pay a crucial role in the functioning of stablecoin procotols, as their value is based on the **value of their backing**.
 
-Before diving into the risks and vulnerabilities, we must talk about oracles, which are in the great majority of project a central element of the system.
+Oracles can be seen as services/systems providing information in a reliable and decentralized maneer to smart-contracts that couldn't (easily or securely) access it otherwise. 
 
-Oracles can be seen as systems providing data in a reliable and decentralized way to on-chain contracts that couldn’t access it otherwise. 
+Some oracles give access to off-chain data ([Chainlink](https://chain.link/), [Pyth](https://pyth.network/price-feeds), …), 
+while some others give access to high confidence on-chain data using clever methods (TWAP oracles)
 
-Some oracles give access to off-chain data (Chainlink/Pyth/…), while some others give access to on-chain data providing a high confidence to the data thanks to its anti-manipulation mechanism (TWAP oracles)
+Price feed oracles like [Chainlink](https://docs.chain.link/getting-started/conceptual-overview#what-are-oracles),
+when they have a lot of sources, are probably the most resilient to manipulation. But what make their strength, also make their weakness.
+If the network feed suffers technical issues, price can become stale or wrong. In order to mitigate these problematics, numerous safeguards have implemented: 
+heartbeat mechanisms, min/max ranges and price deviation, to cite the most common ones. **If those mechanisms are overlooked or not correctly implemented, the odds of using a wrong prices increase.**
 
-Price feed oracles like [Chainlink](https://docs.chain.link/getting-started/conceptual-overview#what-are-oracles), when they have a lot of sources, are probably the most resilient to manipulation. But what make their strength, also make their weakness. If the network feed suffers technical issues, price can become stale or wrong. In order to mitigate these problematics, numerous safeguards have implemented: heartbeat mechanisms, min/max ranges and price deviation, to cite the most common ones. **If those mechanisms are overlooked or not correctly implemented, the odds of using a wrong prices increase.**
+The second most resilient type of oracles are TWAP oracles, [democratized by Uniswap V2](https://docs.uniswap.org/contracts/v2/concepts/core-concepts/oracles). 
+TWAP means Time-Weighted Average Price. 
+In simple words, rather than using the instantaneous balance of the tokens in a pool to calculate the price, 
+every block a checkpoint of the balances is stored, and the price is calculated by averaging balances over a period of time. 
+The longer the period, the more difficult it is to manipulate the price. **But higher is the lag from real-time market price.**
 
-The second most resilient type of oracles are TWAP oracles, [democratized by Uniswap V2](https://docs.uniswap.org/contracts/v2/concepts/core-concepts/oracles).
-TWAP is for Time-Weighted Average Price. In simple words, rather than using the instantaneous balance of the tokens in a pool to calculate the price, every block a checkpoint of the balances is stored, and the price is calculated by averaging balances over a period of time. The longer the period, the more difficult it is to manipulate the price. **But higher is the lag from real-time market price.**
+![How TWAP works (Uniswap Labs)](/static/images/blog/stablecoins/TWAP.png)
 
 This has been implemented to protect from price manipulation relying on huge swap imbalancing pools during 1 block, and thus drastically changing prices. On V3 version, Uniswap improved the TWAP by using the geometric mean of balances to calculate price rather than the arithmetic mean.
 
-Then come spot price, **which should never be used as it is easily manipulable**. In fact, TWAP have been developped to solve that issue.
+*If you'd like more details on TWAP check [this article by RareSkills](https://www.rareskills.io/post/twap-uniswap-v2)*
 
-## Incorrect price feed
+Finally, come the spot price which is the instantaneous price of an asset, usually computed by computing the ratio $n_{token1}/n_{token2}$ in a pool, **which should never be used as it is easily manipulable,** and is the reason why TWAPs have been implemented in the first place.
 
-A stablecoin goal is usually to follow a real-world currency, such as the US dollar (USD). However, it's important to ensure that the oracle used to price the USD isn't another stablecoin oracle. 
+# Incorrect price feed
+A stablecoin goal is usually to follow a real-world asset price, such as the US dollar (USD). 
+A mistake we often see is developers using another stablecoin price as USD price, assuming a 1:1 relation between both.  
 
-### Scenario
-
-- we’re developing a USD-pegged stablecoin
+Scenario: 
+- we're developing a USD-pegged stablecoin
 - A user want to deposit ETH and get stablecoins in exchange
 
 In order to provide him with the right amount of USD-pegged stablecoin, we will need to compare the amount of collateral he is providing (ETH) to the value of USD.
+A common mistake that happen quite often is to use an ETH/USDC price feed. Why is it a mistake? Because USDC is a stablecoin itself! And its value fluctuates relative to the actual USD value.
+This means our stablecoin will be pegged to USDC (and its fluctuation), rather to USD which is not what we aimed for. If this is the case, this also means users can eventually extract value from our protocol/users, for example by arbitraging the difference between the mint/burn price and the pool price. 
+The other case is related to wrapped or [synthetics assets](https://watcher.synthetix.io/markets) (WBTC, stETH, … but not WETH as its a 1:1 image of deposits). If the protocol aim to follow a wrapped or synthetic, then it should never use the non-wrapped/non-synthetic asset as price oracle. 
 
-A common mistake that happen quite often is to use an ETH/USDC price feed. Why is it a mistake ? Because USDC is a stablecoin itself! And its value fluctuates relative to the actual USD value.
+Finally, take [this example of Mirror Protocol](https://hacken.io/industry-news-and-insights/manipulations-with-price-oracles-mirror-protocol-exploit/) who hardcoded the value of \$UST (Luna stablecoin) to \$1, and suffered an exploit when UST depegged by more than 90%!
 
-This means our stablecoin will be pegged to USDC (and its fluctuation), rather to USD which is not what we aimed for. If this is the case, this also means users can extract value from our protocol.
-
-The other case is related to wrapped (WBTC, stETH, … but not WETH as its a 1:1 image of deposits) or [synthetics assets](https://watcher.synthetix.io/markets). If the protocol aim to follow a wrapped or synthetic, then it should never use the non-wrapped/non-synthetic asset as the oracle. The reason is simple: if the wrapped/synthetic would depeg down (let’s say -10%) relative to the followed asset, then [we would allow users to buy 100 and mint it like it is worth 110](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/310) in our protocol. 
-
-What you want to do is to use the Chainlink [ETH/USD oracle](https://data.chain.link/feeds/ethereum/mainnet/eth-usd) instead. If this oracle was used in the first place, then user would have minted 1000 exUSD, and
-    
-
-By the way, there is no problem in making a profit off a stablecoin, but this usually happens when the stablecoin value is overpriced. When this happens, the user mint the stablecoin and sell it, which help in restoring the peg. The opposite happens when the stablecoin is underpriced: user buy it on the market (which increase its price), and redeem it in the protocol for a 1$ of value.
-
-But in the above scenario, the stablecoin is minted at an over-valuated price, meaning, even if the stablecoin price on the market is under the peg, a user could make some money off of it, and push it even further down from its peg. 
+Related reported issues:
 
 - [WATCHPUG - Oracle price should be denominated in DAI instead of USD](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/909)
 - [Bauchibred - StableOracleWBTC use BTC/USD chainlink oracle to price WBTC which is problematic if WBTC depegs](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/310)
 - [0xsomeone - Incorrect Assumption of Stablecoin Market Stability](https://github.com/code-423n4/2022-12-tigris-findings/issues/462)
     
-> in this submission, the SR has shown that considering all collateral assets (which are stablecoin themselves) equal to 1\$ open up possibility of arbitrage, as users can flashloan a huge amount of token1 which value \<1\$, deposit in pool, mint protocol stable, and burn for token2 valued \>1\$
+    > in this submission, the SR has shown that considering all collateral assets (which are stablecoin themselves) equal to 1\$ open up possibility of arbitrage, as users can flashloan a huge amount of token<sub>1</sub> which value \<\$1, deposit in pool, 
+	>mint protocol stable, and burn for token<sub>2</sub> valued \>1\$
+    > 
 
-## Incorrect price value (but correct feed)
-
-This is a more generic oracle issue that we’re talking here. Asset price is the most critical piece of information for any protocol that integrate with these assets. 
-
-However, this is a complex topic that doesn't have a perfect solution as shown in the previous section about oracles [add an anchor link]. Price feeds can become stale, can return wrong values, can revert. TWAP lag behind by design, the less lag we want, the more manipulable it become.
-
+# Incorrect Price Value
+This is a more generic oracle issue that we're talking here. Asset price is the most critical piece of information for any protocol that integrate with these assets. 
+However, this is a complex topic that doesn't have a perfect solution as shown in the previous section about oracles [add an anchor link]:
+- Price feeds can become stale, can return wrong values, can revert.
+- TWAP lag behind by design. Also, to reduce the lag, the time-window must be shortened, but as the time-window shorten, the more manipulable become the price.
 So, if we come back to our stablecoin, what could an erroneous pricing could cause to the system? 
-
 1. excessive/insufficient minting of stablecoin compared to collateral
 2. excessive/insufficient burning of stablecoin compared to repay
 3. abusive liquidation
-
-The worst case scenario for the protocol here are excessive minting and insufficient burning, as this represent a leak of value in favor of the user, which can be exploited by a malicious actor.
-
+The worst case scenario for the protocol here are excessive minting and insufficient burning, as this represent a leak of value in favor of the user, which can be exploited.
 Opposite scenario are also bad, but less dangerous for the protocol, as it may be more difficult to be exploited, though still possible: by losing money to the protocol, the malicious actor can take advantage of the situation and manipulate a specific state variable, [which in return will open up a new attack path](https://twitter.com/kankodu/status/1752581744803680680), which has been recently used more than one time as a new attack against ERC-4626, [circumventing the usual defensive mechanisms](https://x.com/InfectedCrypto/status/1764760446253355308).
-
 For more examples of Oracle integration issues, refer to this comprehensive [checklist from Dacian](https://medium.com/cyfrin/chainlink-oracle-defi-attacks-93b6cb6541bf).
+
+Related reported issues:
 
 - [stopthecap - If any stable depegs, oracle will fail, disabling swaps](https://github.com/sherlock-audit/2023-04-unitasprotocol-judging/issues/145)
 
-## Pricing calculation error
-
+# Computation Error
 Even if price are correctly fetched (correct oracle feed, correct price), there is still a possibility that the math or logic are wrong. Here issues can appear at various part of the operations, similarly to previous section about incorrect price as final impact is the same: wrong evaluation of assets.
-
 Best way to handle these case is to write extensive and comprehensive tests to ensure critical functions of your protocol always behave as expected.
 
-Examples:
-
+Related reported issues:
 - [Bauer - The getOwnValuation() function contains errors in the price calculation #222](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/222)
 - [Dug - The price from StableOracleDAI is returned with the incorrect number of decimals #236](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/236)
-- [curiousapple - PEG could never be restored completely due incorrect derivation for amount to be swapped #834](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/834)
-- [StableOracleDAI calculates getPriceUSD with inverted base/rate tokens for Chainlink price](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/102)
+- [curiousapple - PEG could never be restored completely due incorrect derivation for amount to be swapped #834](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/834)
+- [StableOracleDAI calculates getPriceUSD with inverted base/rate tokens for Chainlink price](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/102)
 - [carrotsmuggler - Incorrect pricing of tokens](https://github.com/sherlock-audit/2023-04-unitasprotocol-judging/issues/141)
 
-## Bad debt and liquidation issues
-
+# Bad debt and liquidation issues
 Stablecoin protocol for the vast majority, rely on collateral backing. This ensures that the stablecoin can be exchanged on a 1:1 ratio with its dollar-value counterpart To do so, its almost mandatory that the collateral to debt ratio (total collateral value deposited divided by total stablecoin value minted) stays above a certain threshold which is greater than 1 by some margin.
-
 This is necessary so that price fluctuation of the collateral asset do not threaten the promise that at any moment in time, any user can hand back the stablecoin and get repaid 1:1. 
-
 However, if the collateral asset's value dips drastically, it can lead to a situation called 'bad debt'. In such cases, the protocol usually has a liquidation mechanism to protect its users and maintain the peg. However, if these mechanisms are not properly designed or implemented, it could lead to further problems.
-
 Depeg or black swan events are dramatic issues that cannot be avoided either way, so there is no real remediation against them. But safeguards and mechanisms can be set to mitigated and reduce the impact and risk the protocol will bear.
-
-Existing mechanisms are 
-
-1. High collateralization ratio: The higher the collateralization ratio, the more the protocol is able to tank for negative price changes. For example, because Synthetix uses an endogenous token as collateral, [the required CR is 700%](https://staking.synthetix.io/staking/mint/). But common values are around 200-300%. 
-2. Buffer/Insurance fund: its goal is to pay for bad debt when nothing more is left, filled by fees or other mechanisms.
+Existing mechanisms are: 
+1. High collateralization ratio - The higher the collateralization ratio, the more the protocol is able to tank for negative price changes. For example, because Synthetix uses an endogenous token as collateral, [the required CR is 700%](https://staking.synthetix.io/staking/mint/). But common values are around 200-300%. 
+2. Buffer/Insurance fund - its goal is to pay for bad debt when nothing more is left, filled by fees or other mechanisms.
     1. [Flapper module](https://docs.makerdao.com/smart-contract-modules/system-stabilizer-module/flap-detailed-documentation) from MakerDAO, which build up a fund from fees to incentivize the liquidation of undercollateralized loans, which would otherwise be unprofitable
     2. [Safety module](https://docs.aave.com/aavenomics/safety-module) from Aave, which is build from users of the protocol depositing AAVE tokens, which can be used to soak up shortfall of collateral. To reward the depositor for the risk they run, periodic rewards are distributed
 3. Bad debt socialization: distributing the bad debt amongst all the users of the protocol. Usually used as a last resort, but can also be sufficient when the CR is high enough, as this allow to not set fees for a buffer.
 
-Examples:
-
-- [Infect3d - No incentive to liquidate when CR \<= 1 as asset received \< dyad burned](https://github.com/code-423n4/2024-04-dyad-findings/issues/977)
+Related reported issues:
+- [Infect3d - No incentive to liquidate when CR \<= 1 as asset received < dyad burned](https://github.com/code-423n4/2024-04-dyad-findings/issues/977)
 - [dimulski - No incentive to liquidate small positions could result in protocol going underwater](https://github.com/code-423n4/2024-04-dyad-findings/issues/175)
 - [MrPotatoMagic - Inability to perform partial liquidations allows huge positions to accrue bad debt in the system](https://github.com/code-423n4/2024-04-dyad-findings/issues/1097)
 - [cergyk - UbiquityPool::redeemDollar No guarantees of pool solvency](https://github.com/sherlock-audit/2023-12-ubiquity-judging/issues/60)
 
-## Users can arbitrage stable in pools
-
+# Users can arbitrage stable in pools
 While arbitrage is necessary in DeFi to align prices with their "real" market value, certain components should not be targeted. Doing so could negatively impact either the protocol or its users, solely benefitting a single actor.
-
 Mispricing the collateral backing your stablecoin can lead to users being able to mint more stablecoin than they should, and sell it on third party pools (uniswap, curve, …), which will have as an effect to push its price downward, effectively making it drive away from its peg
-
-An example of this situation can be seen in that submission, where the oracle deviation threshold is not taken into account, making it possible to arbitrage between market price of token in a pool and oracle price in stablecoin protocol.
-
+An example of this situation can be seen in a link below, where the oracle deviation threshold is not taken into account, making it possible to arbitrage between market price of token in a pool and oracle price in stablecoin protocol.
 There is two main way to protect a protocol from “unfair” arbitrage:
-
-- **timelock:** by disallowing users to deposit\<>withdraw or buy\<>sell in the same tx or block (last one is not great imo), this prevent user to sandwich a price change for profit
+- **timelock:** by disallowing users to deposit\<\>withdraw or buy \<\>sell in the same tx or block (last one is not great imo), this prevent user to sandwich a price change for profit
 - **fees:** setting fees will eat up part of the profit that can be made by the arbitrageur. If carefully selected, this can make this kind of operations mostly non profitable.
 
-Examples:
-
+Related reported issues:
 - [WATCHPUG -Using the collateral assets' oracle price at 100% of its value to mint USSD without a fee can be used for arbitrage](https://github.com/sherlock-audit/2023-05-USSD-judging/issues/836)
 - [shogoki - Unitas swap function is vulnerable to Sandwich Attack at oracle price update](https://github.com/sherlock-audit/2023-04-unitasprotocol-judging/issues/67)
 
-## Using endogenous collateral
-
+# Using endogenous collateral
 This is common thing to see protocols having their own token appart of the stablecoin they emit. This token usually holds 2 functions: governance, in order to vote for parameter and protocol updates; revenue sharing, usually distributed to users taking part in some of the protocol functionalities, such as liquidity providing, staking or more original stuffs.
-
-Bluechip, [an independent stablecoin rating agency](https://twitter.com/bluechip_org) automatically gives an ‘F’ rating to any stablecoin protocol using its own token as collateral backing its stablecoin. The most notable example of case where an endogenous collateral caused a death spiral is obviously the [LUNA crash](https://rekt.news/luna-rekt/), as both UST and LUNA prices were interdependent on each other.
-
+Bluechip, [an independent stablecoin rating agency](https://twitter.com/bluechip_org) automatically gives an "F" rating to any stablecoin protocol using its own token as collateral backing its stablecoin. The most notable example of case where an endogenous collateral caused a death spiral is obviously the [LUNA crash](https://rekt.news/luna-rekt/), as both UST and LUNA prices were interdependent on each other.
+![UST price crashing on May 2020](/static/images/blog/stablecoins/UST-depeg.png)
 Some protocol such as Synthetix, FRAX or Beanstalk, appear to successfully manage such kind of collateral, not with some trouble though.
+Having a (very) high collateralization ratio is important, though, it is recommended to simply avoid using an interwined value system of stablecoin-token, as this make will make it way more sensitive to perturbation because of the negative feedback loop (and positive in case of positive market conditions) that it implies.  
 
-Having a (very) high collateralization ratio is important, though it is recommended ****to simply avoid using an intricated value system of stablecoin-token, as this make will make it way more sensitive to perturbation because of the negative feedback loop (and positive in case of positive market conditions) that it implies.
-
-## CDP related issues
-
-Something I haven’t yet clearly expressed yet, is that most of stablecoin protocols are in fact [CDP protocols](https://defillama.com/protocols/CDP) (Collateralized Debt Position). 
-
+# CDP related issues
+Something I haven't yet clearly expressed yet, is that most of stablecoin protocols are in fact [CDP protocols](https://defillama.com/protocols/CDP) (Collateralized Debt Position). 
 CDPs are one of the most represented type of systems we see in DeFi, and some of them, apart of borrowing other users assets, also give the possibility for lenders to mint a stablecoins against theyir deposit.
-
-[Dacian again wrote an excellent checklist](https://defillama.com/protocols/CDP), and this is a whole topic on its own, so I suggest you to also carefully study it if it happens that the protocol you’re auditing is a CDP.
-
+[Dacian again wrote an excellent checklist](https://defillama.com/protocols/CDP), and this is a whole topic on its own, so I suggest you to also carefully study it if it happens that the protocol you're auditing is a CDP.
 If the stablecoin protocol you are reviewing is a CDP, then any issue in the CDP has a high risk of impacting the stablecoin stability.
+

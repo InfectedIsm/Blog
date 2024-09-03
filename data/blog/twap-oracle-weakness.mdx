@@ -1,36 +1,38 @@
 ---
-title: 'TWAP oracle weakness: paper analysis'
+title: 'TWAP Oracle Weakness: Paper Analysis'
 date: '2024-01-15'
 tags: ['research', 'oracle', 'quick read']
 draft: false
-summary: Can we manipulate TWAP oracles? Let's find out
+summary: Can we manipulate TWAP oracles? Let's find out...
 ---
 
 # TWAP Oracle weakness
 
-What if I told you the cost of manipulating a TWAP is overlooked, and there’s a way to reduce it? (in fact UniV3 did it) 
+What if I told you the cost of manipulating a TWAP is overlooked, and there’s a way to reduce it? (in fact UniV3 did it)  
 That’s what is explained in this paper: https://eprint.iacr.org/2022/445.pdf 
 
 ![image](/static/images/blog/twap-oracle/1-bnw-paper-screenshot.png)
 
-TWAP (Time Weighted Average Price) as price oracle is a technique used to make price manipulation more costly for the attacker.
+TWAP (Time Weighted Average Price) as price oracle is a technique used to make price manipulation more costly for the attacker.  
 
 ![image](/static/images/blog/twap-oracle/2-bnw-twap-uniswap2.png)
 
-The most naive price indicator of a token is its spot price, which is calculated using the instantaneous balances B1 and B2 of a pool (B1/B2 or B2/B1). 
-These balances can be easily manipulated by interacting with the pool, by buying or selling one of the tokens.
-Rather than using the spot price, TWAP calculates the average balances over a chosen period of time T. 
-T must be greater than the block.time of the chain, so that the TWAP is calculated by averaging the balances at different blocks, which make it impossible to use a flashloan attacks to manipulate a pool.
-What make attack on a TWAP difficult is that the funds must be available over multiple blocks. 
-This means attacker must be rich, while also risking to see his positions arbitrated. 
-The longer is the TWAP window, the riskier it become.
+The most naive price indicator of a token is its spot price, which is calculated using the instantaneous balances B1 and B2 of a pool (B1/B2 or B2/B1).
+These balances can be easily manipulated by interacting with the pool, by buying or selling one of the tokens. 
+
+Rather than using the spot price, TWAP calculates the average balances over a chosen period $T$ of time. 
+$T$ must be greater than the block.time of the chain, so that the TWAP is calculated by averaging the balances at different blocks, which make it impossible to use a flashloan attacks to manipulate a pool.  
+
+What make attack on a TWAP difficult is that the funds must be available over multiple blocks.  
+This means attacker must be rich, while also risking to see his positions arbitrated.   
+The longer is the TWAP window, the riskier it become.  
 
 To reduce the risk, the authors propose a single-block attack rather than a multi-block. Rather than risking X funds over N blocks, the attacker can manipulate the pool for one block with X*N funds over 1 block. 
 The result of the TWAP calculations will be the same, but the attacker will have taken risks only over 1 block.
 
 > B. Single-block attack
 >
->The multi-block attack model is assumed to be
+> The multi-block attack model is assumed to be
 manipulation-resistant if the AMM pools have large liquidity
 reserves. Optimistic users assume that the attacker needs to
 pay a huge price of $C_m = L_T · C_1(ϵ)$ to manipulate $m_p$ to
@@ -38,7 +40,7 @@ $(1 + ϵ)$ · mp over LT successive blocks. Our insight is that
 the same effect can be seen if the attacker can manipulate
 $m_p$ for just one block to $(1 + L_T · ϵ) · m_p$
 
-In this extract, $C_m$ is the cost of manipulation, $L_T$ the number of blocks of the TWAP, $C_1$ the cost of manipulation for 1 block, and $m_p$ the market price we want to get to.
+In the extract above, $C_m$ is the cost of manipulation, $L_T$ the number of blocks of the TWAP, $C_1$ the cost of manipulation for 1 block, and $m_p$ the market price we want to get to.
 This show that it is possible to have the same effect on TWAP price to manipulate one block with more funds, than manipulating multiple blocks with less funds which exposes to more risks. of arbitrage. 
 
 ![image](/static/images/blog/twap-oracle/4-cost-comparison.png)
@@ -62,7 +64,7 @@ asset at time ti as
 > This allows a consumer protocol (like a lending protocol) to
 use the geometric mean of the pool as
 >
-> $P_{t_1, t_2} = B^{\frac{A_{t_2} - A_{t_1}}{L_T}}$
+> $P_{t_1, t_2} = B^{\frac{A_{t_2}-A_{t_1}}{L_T}}$
 >
 > In effect, the geometric mean of the individual prices can also
 be written as
