@@ -11,40 +11,40 @@ summary: How I finally started bug hunting and a trick I "discovered" while doin
 Finally, I've done some bug bounty!
 I wrote this article to **share an interesting trick I used while working on this bug bounty**, but I found myself writing the whole experience and thought it was interesting to share as a whole.
 
-You can skip to the relevant part by clicking [here](#the-trick). 
-This was one of my goals since I started doing web3 security. But this took me some time, the reason is that security contests are easier when just starting. 
+You can skip to the relevant part by clicking [here](#the-trick).
+This was one of my goals since I started doing web3 security. But this took me some time, the reason is that security contests are easier when just starting.
 The reason why contests are easier when starting out are the following:
 
-| 	| Contests | Bug Bounties |
-|---|---|---|
-| Contract Files | <ul><li>runnable repo with tests</li><li>can be run and demonstrated with local deployment</li><li>easy tweaking and debugging thanks to console.log</li></ul> | <ul><li>deployed files can be different to repo files</li><li>must fork the chain and get the abi for each contracts</li><li>harder to tweak and log</li></ul> |
-| ROI (\$) | <ul><li>if you found a bug you'll get paid</li><li>but only few (top 3-5) earn interesting amounts</li></ul> | <ul><li>you need to be the first to report to get paid</li><li>if you find a bug you know how much you will get</li></ul> |
-| Learning Experience | <ul><li>great learning feedback loop thanks to contest final reports to compare with your findings</li><li>time bounded, meaning you cannot always go as deep as you would need/want</li></ul> | <ul><li>no feedback loop</li><li>you can go as deep as needed to uncover interesting bugs</li></ul> |
-     
+|                     | Contests                                                                                                                                                                                       | Bug Bounties                                                                                                                                                   |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contract Files      | <ul><li>runnable repo with tests</li><li>can be run and demonstrated with local deployment</li><li>easy tweaking and debugging thanks to console.log</li></ul>                                 | <ul><li>deployed files can be different to repo files</li><li>must fork the chain and get the abi for each contracts</li><li>harder to tweak and log</li></ul> |
+| ROI (\$)            | <ul><li>if you found a bug you'll get paid</li><li>but only few (top 3-5) earn interesting amounts</li></ul>                                                                                   | <ul><li>you need to be the first to report to get paid</li><li>if you find a bug you know how much you will get</li></ul>                                      |
+| Learning Experience | <ul><li>great learning feedback loop thanks to contest final reports to compare with your findings</li><li>time bounded, meaning you cannot always go as deep as you would need/want</li></ul> | <ul><li>no feedback loop</li><li>you can go as deep as needed to uncover interesting bugs</li></ul>                                                            |
+
 What is generally admitted is that security contests have a lower ROI than bug bounties in term of money, but higher ROI in term of learning (at least when new to the field).  
-But obviously this depends on everyone, and we have example of security researcher who started with bug bounties first (\@deadrosexyz if I'm not mistaken is one of them).  
+But obviously this depends on everyone, and we have example of security researcher who started with bug bounties first (\@deadrosexyz if I'm not mistaken is one of them).
 
 Anyway, that being said, I wasn't feeling ready for direct live hunting so I decided to go for contests first as this would allow me to get more feedback on my work.  
-I did this for a bit more than 1 year without taking the leap and trying to go live. But a recent contest gave me the opportunity to finally try it out.  
+I did this for a bit more than 1 year without taking the leap and trying to go live. But a recent contest gave me the opportunity to finally try it out.
 
-Along this experience, I learned a lot if cool new things, so cool I wanted to share it with the community. 
+Along this experience, I learned a lot if cool new things, so cool I wanted to share it with the community.
 
 # The spark
 
 The opportunity came while I was participating in LoopFi, a DeFi protocol allowing users to leverage their staked ETH into more staked ETH, through a “loop” of deposited staked ETH and ETH borrowing.
-This protocol is also a highly customized fork of Gearbox.  
+This protocol is also a highly customized fork of Gearbox.
 
-While reading the previous security reports I stumbled across a finding that was very interesting, as it was related to some notes I took while reviewing the codebase. 
+While reading the previous security reports I stumbled across a finding that was very interesting, as it was related to some notes I took while reviewing the codebase.
 After some digging, it seemed to me that proposed remediation was indeed correct.
 I kept this in a corner of my mind, and once the contest was over, I decided to check how this was implemented in the project it was forked from [Gearbox](https://docs.gearbox.finance/)
-After so more digging, I was pretty sure a bug was present in Gearbox, as the implementation was exactly was has been described as a bug in LoopFi. 
-It was time to get my hand dirty.  
+After so more digging, I was pretty sure a bug was present in Gearbox, as the implementation was exactly was has been described as a bug in LoopFi.
+It was time to get my hand dirty.
 
-*This article is not about the bug itself, but about the process of live bug hunting.*
+_This article is not about the bug itself, but about the process of live bug hunting._
 
 # The process
 
-First thing to do is to check if the protocol has a bug bounty program. While this might not be required, it is still preferred to hunt those protocols as they have an internal process to manage those situation. 
+First thing to do is to check if the protocol has a bug bounty program. While this might not be required, it is still preferred to hunt those protocols as they have an internal process to manage those situation.
 That information is usually available [in the protocol documentation](https://docs.gearbox.finance/risk-and-security/audits-bug-bounty#bug-bounty).
 
 After this, you will need to set up you environment to work effectively. I ended up by having two different repos:
@@ -58,11 +58,12 @@ The 2nd repo to write the PoC or poke (drop mic) the live contracts.
 I personally find it easier to separate the two things, especially when it will be time to share the PoC to the concerned people.
 I also prefer to work with an IDE, but some beast (respect) simply hunt on Etherscan, or using [dethcode](https://github.com/dethcrypto/dethcode).
 
-*Fast-forwarding to moment you found a bug ⏩*
-Once the bug is confirmed, if its not already done (as you might have used the PoC template through your hunt), it is time to write the PoC. 
+_Fast-forwarding to moment you found a bug ⏩_
+Once the bug is confirmed, if its not already done (as you might have used the PoC template through your hunt), it is time to write the PoC.
 This part kind be a bit scary when you are used to contests, as you will not have direct access to the whole protocol files and tests.
 
 The PoC can basically be broken in 3 parts:
+
 1. forking the chain at a specific block
 2. preparing all contracts addresses and prototype to execute your scenario
 3. executing the attack logic
@@ -93,16 +94,16 @@ contract HundredFinanceHackTest is PoC {
 
 # The issue
 
-While trying to demonstrate the issue, I had some trouble to show how a specific value was incorrectly computed. 
+While trying to demonstrate the issue, I had some trouble to show how a specific value was incorrectly computed.
 
-To illustrate this, let's say you want to show that a value `x` is inflated by a value `a`. 
+To illustrate this, let's say you want to show that a value `x` is inflated by a value `a`.
 But `x` is not accessible to read, as it is part of an equation `y = x*b + z*c + d`, and where `b`,`c` and `d` are state variables that change on every blocks, and `y` is important public state variable.
 
 So, how can I easily demonstrate that `x = x'+ a` and not just `x`?
 
 Sure, you need to demonstrate it mathematically in your report, but as PoC are almost not an option when reporting a bug on bug bounty platforms, it is important to make the PoC as impactful as possible.
 
-My idea was then to change the values of `b`,`c` and `d`, such that the equation become really simple. 
+My idea was then to change the values of `b`,`c` and `d`, such that the equation become really simple.
 By setting `b = 1`, `c, d = 0`, the equation become `y = x`, which make it trivial to demonstrate that there is an issue on how `x` is computed.
 
 How to achieve such a state using a forked environment?
@@ -113,13 +114,13 @@ Solution: the holy grail [Foundry](https://book.getfoundry.sh/)
 
 # The trick
 
-The [Forge Standard Library](https://book.getfoundry.sh/forge/forge-std#forge-standard-library-overview) has 2 interesting functions allowing 
-to read and write state variable from an address as an arbitrary slot: [vm.store](https://book.getfoundry.sh/cheatcodes/store?highlight=vm.stor#examples) 
+The [Forge Standard Library](https://book.getfoundry.sh/forge/forge-std#forge-standard-library-overview) has 2 interesting functions allowing
+to read and write state variable from an address as an arbitrary slot: [vm.store](https://book.getfoundry.sh/cheatcodes/store?highlight=vm.stor#examples)
 and [vm.load](https://book.getfoundry.sh/cheatcodes/load?highlight=load#load).
 
 `vm.store` allows to easily update immutable and private state variables in forked contracts.
 
-Let's take [that UniswapV2 pair](https://etherscan.io/address/0x3356c9a8f40f8e9c1d192a4347a76d18243fabc5#code) as an example (below screenshot 
+Let's take [that UniswapV2 pair](https://etherscan.io/address/0x3356c9a8f40f8e9c1d192a4347a76d18243fabc5#code) as an example (below screenshot
 from [Sim Explorer](https://explorer.sim.io/eth/20814426/0x3356c9a8f40f8e9c1d192a4347a76d18243fabc5#map), was before known as evm.storage)
 
 ![image.png](/static/images/blog/state-variable-overwriting/pairV2.png)
@@ -137,7 +138,7 @@ Then, to overwrite its value it is simple:
 The value stored in `totalSupply` is now 5000, and no more the previous one, and you can run your PoC with that value!
 Let's see another example, and overwrite the `reserve1` value only.
 As we can see, `reserve1` is a `uint112` and share its slot with 2 other values, `reserve0` and `blockTimestampLast`.
-The thing is, `vm.store` only allow to write `bytes32` values, or in other words the full slot. 
+The thing is, `vm.store` only allow to write `bytes32` values, or in other words the full slot.
 For this reason, we will have to use some basic logic operations to extract and insert the data we are interested in.
 
 Here's a commented snippet demonstrating how this can be achieved:
@@ -155,12 +156,12 @@ function OverwriteReserve1(address pairV2, uint256 newReserve1) public {
 	// mask:
 	// |----blockTimestampLast------|----------reserve1----------|----------reserve0----------|
 	// | 11111111111111111111111... | 000000000000000000000...   | 1111111111111111111111...  |
-	bytes32 mask = ~(bytes32(uint256(type(uint112).max)) << 112);        
+	bytes32 mask = ~(bytes32(uint256(type(uint112).max)) << 112);
 
 	// Step 3: Clear only the old `reserve1` value by doing (slot AND mask)
 	// |----blockTimestampLast------|----------reserve1----------|----------reserve0----------|
 	// | <blockTimestampLast-value> | 000000000000000000000...   |     <reserve0-value>       |
-		
+
 	// Step 4: and insert the new `reserve1` value using OR
 	// |----blockTimestampLast------|----------reserve1----------|----------reserve0----------|
 	// | <blockTimestampLast-value> |   <new-reserve1-value>     |     <reserve0-value>       |
@@ -177,9 +178,8 @@ function OverwriteReserve1(address pairV2, uint256 newReserve1) public {
 With this, you have all you need to update [value type](https://docs.soliditylang.org/en/latest/types.html#) and struct state variables.
 For mappings and arrays, its a bit more tricky, so i'll redirect you to this great article by noxx: [EVM Deep Dives: The Path to Shadowy Super Coder](https://noxx.substack.com/p/evm-deep-dives-the-path-to-shadowy-3ea)
 
-There are plenty of other tricks that you can use to change the behavior of a live contract for the purpose of your PoC, as [mockCall](https://book.getfoundry.sh/cheatcodes/mock-call) 
-to force a function to return a specific value, or even [etch](https://book.getfoundry.sh/cheatcodes/etch), 
+There are plenty of other tricks that you can use to change the behavior of a live contract for the purpose of your PoC, as [mockCall](https://book.getfoundry.sh/cheatcodes/mock-call)
+to force a function to return a specific value, or even [etch](https://book.getfoundry.sh/cheatcodes/etch),
 which would allow you to replace the bytecode of the deployed contract [with a slightly modified version with console.log added](https://twitter.com/bytes032/status/1656110114279915521)!
 
 Hope you had a great time reading this article.
-

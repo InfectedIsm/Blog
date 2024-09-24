@@ -37,7 +37,13 @@ const AuthorCard = ({ content }) => {
       <div className="flex max-w-full flex-col items-center justify-center text-center">
         <div className="prose max-w-full pb-8 pt-10 dark:prose-invert xl:text-xl">
           <p>
+<<<<<<< HEAD
 			In this era of full digitalization, now more than ever, blockchain technology is a victory for freedom and humanity, that must be protected and cherished.\r Let's work together to give back control to people over the digital world.
+=======
+            In this era of full digitalization, now more than ever, blockchain technology is a
+            victory for freedom and humanity, that must be protected and cherished. Let's work
+            together to give back control to people over the digital world.
+>>>>>>> 130a45977af8a66dc4e6d1625a0a887aac962e88
           </p>
         </div>
       </div>

@@ -16,7 +16,7 @@ This isn't a post about writing **good**, but **fancy** reports, that is why I w
 
 ## Using the right template
 
-First let's start with the obvious. Either you're participating in [Code4rena](https://code4rena.com/audits), [Sherlock](https://www.sherlock.xyz/), [CodeHawks](https://codehawks.cyfrin.io/contests), [Immunefi](https://immunefi.com/), 
+First let's start with the obvious. Either you're participating in [Code4rena](https://code4rena.com/audits), [Sherlock](https://www.sherlock.xyz/), [CodeHawks](https://codehawks.cyfrin.io/contests), [Immunefi](https://immunefi.com/),
 or any other competitive platform, you must respect the template.
 This is important as judges will review hundreds of submissions, you easily understand how this can help them to go faster.
 
@@ -30,17 +30,16 @@ This is important as judges will review hundreds of submissions, you easily unde
 ## Proof of Concept
 
 ## Tools Used
+
 Manual review
 
 ## Recommended Mitigation Steps
-
 ```
 
 A great title to begin your report will help the judge to grasp the core idea, here's an example of good title:  
-"_**[actors]**_ can _**[impact]**_ by _**[condition]**_"  
+"_**[actors]**_ can _**[impact]**_ by _**[condition]**_"
 
 The title must be short or it will simply lose its purpose.
-
 
 ## Copy With Line Number
 
@@ -51,17 +50,18 @@ Check my previous post for more informations: https://twitter.com/InfectedCrypto
 Also, you might be interested by the [quick mod](https://gist.github.com/InfectedIsm/27ab29937181919b89589c62c0113db8) I've done to the Copy With Line Number extension to lose even less time
 
 ## WeAudit
+
 This extension developed by [@trailofbits](https://twitter.com/trailofbits) is also a must have for every SR. Among all its functionalities, there is one very practical for reports: you can seamlessly get a link to a specific part of the code!
 
 More informations here: [weAudit Vscode Extension](https://marketplace.visualstudio.com/items?itemName=trailofbits.weaudit)
 
 ![](/static/images/blog/foundry-tips/4.png)
 
-
 ## Diff blocks
+
 The recommendation part of the report usually contains a diff of the modification compared to base implementation.
 By reading a lot of reports, I've noticed a lot of people don’t seem to know this exist in the first place.
-By using wrapping your code inside a *\```diff ... ```* code block you'll get these really practical colors:
+By using wrapping your code inside a _\```diff ... ```_ code block you'll get these really practical colors:
 
 ![](/static/images/blog/foundry-tips/5.png)
 ![](/static/images/blog/foundry-tips/6.png)
@@ -82,9 +82,11 @@ git fetch original
 ```
 
 print the diff between original file and your modifications
+
 ```
 git diff original/main -- src/contract.sol
 ```
+
 ## Adding images
 
 You can also add images to your submission, to do so, you can use a simple trick.
@@ -99,7 +101,4 @@ Finally, to use with moderation as this can make "too much" sometimes, you can t
 
 ![](/static/images/blog/foundry-tips/11.png)
 
-
 Well that’s the end. Go write your report now, I bet you have something cooking that might profit from a bit of seasoning 🍜🧂
-
-

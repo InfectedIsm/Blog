@@ -9,83 +9,82 @@ summary: Can we manipulate TWAP oracles? Let's find out...
 # TWAP Oracle weakness
 
 What if I told you the cost of manipulating a TWAP is overlooked, and there’s a way to reduce it? (in fact UniV3 did it)  
-That’s what is explained in this paper: https://eprint.iacr.org/2022/445.pdf 
+That’s what is explained in this paper: https://eprint.iacr.org/2022/445.pdf
 
 ![image](/static/images/blog/twap-oracle/1-bnw-paper-screenshot.png)
 
-TWAP (Time Weighted Average Price) as price oracle is a technique used to make price manipulation more costly for the attacker.  
+TWAP (Time Weighted Average Price) as price oracle is a technique used to make price manipulation more costly for the attacker.
 
 ![image](/static/images/blog/twap-oracle/2-bnw-twap-uniswap2.png)
 
 The most naive price indicator of a token is its spot price, which is calculated using the instantaneous balances B1 and B2 of a pool (B1/B2 or B2/B1).
-These balances can be easily manipulated by interacting with the pool, by buying or selling one of the tokens. 
+These balances can be easily manipulated by interacting with the pool, by buying or selling one of the tokens.
 
-Rather than using the spot price, TWAP calculates the average balances over a chosen period $T$ of time. 
-$T$ must be greater than the block.time of the chain, so that the TWAP is calculated by averaging the balances at different blocks, which make it impossible to use a flashloan attacks to manipulate a pool.  
+Rather than using the spot price, TWAP calculates the average balances over a chosen period $T$ of time.
+$T$ must be greater than the block.time of the chain, so that the TWAP is calculated by averaging the balances at different blocks, which make it impossible to use a flashloan attacks to manipulate a pool.
 
 What make attack on a TWAP difficult is that the funds must be available over multiple blocks.  
-This means attacker must be rich, while also risking to see his positions arbitrated.   
-The longer is the TWAP window, the riskier it become.  
+This means attacker must be rich, while also risking to see his positions arbitrated.  
+The longer is the TWAP window, the riskier it become.
 
-To reduce the risk, the authors propose a single-block attack rather than a multi-block. Rather than risking X funds over N blocks, the attacker can manipulate the pool for one block with X*N funds over 1 block. 
+To reduce the risk, the authors propose a single-block attack rather than a multi-block. Rather than risking X funds over N blocks, the attacker can manipulate the pool for one block with X\*N funds over 1 block.
 The result of the TWAP calculations will be the same, but the attacker will have taken risks only over 1 block.
 
 > B. Single-block attack
 >
 > The multi-block attack model is assumed to be
-manipulation-resistant if the AMM pools have large liquidity
-reserves. Optimistic users assume that the attacker needs to
-pay a huge price of $C_m = L_T · C_1(ϵ)$ to manipulate $m_p$ to
-$(1 + ϵ)$ · mp over LT successive blocks. Our insight is that
-the same effect can be seen if the attacker can manipulate
-$m_p$ for just one block to $(1 + L_T · ϵ) · m_p$
+> manipulation-resistant if the AMM pools have large liquidity
+> reserves. Optimistic users assume that the attacker needs to
+> pay a huge price of $C_m = L_T · C_1(ϵ)$ to manipulate $m_p$ to
+> $(1 + ϵ)$ · mp over LT successive blocks. Our insight is that
+> the same effect can be seen if the attacker can manipulate
+> $m_p$ for just one block to $(1 + L_T · ϵ) · m_p$
 
 In the extract above, $C_m$ is the cost of manipulation, $L_T$ the number of blocks of the TWAP, $C_1$ the cost of manipulation for 1 block, and $m_p$ the market price we want to get to.
-This show that it is possible to have the same effect on TWAP price to manipulate one block with more funds, than manipulating multiple blocks with less funds which exposes to more risks. of arbitrage. 
+This show that it is possible to have the same effect on TWAP price to manipulate one block with more funds, than manipulating multiple blocks with less funds which exposes to more risks. of arbitrage.
 
 ![image](/static/images/blog/twap-oracle/4-cost-comparison.png)
 
 The x-axis of this graph is the block-window, while y-axis is (cost of multi-block/cost of single-block). Finally, ϵ represent percentage of price change (0.25 = +25%). A y-value >1 indicate that the multi block cost is higher. It is shown that depending on the time-window, the single block attack can become cheaper.
 
-So, how did UniV3 solve this issue? 
+So, how did UniV3 solve this issue?
 
 They used the geometric mean rather than the artihmetic mean to calculate the TWAP price.
 
->B. Solution 2: Geometric Mean
-> 
+> B. Solution 2: Geometric Mean
+>
 > Uniswap V3 stores the cumulative logarithm (to some base
-b) of the price of every pool’s assets instead of the sum as in
-Uniswap V2. As before, we denote the length of the TWAP
-to be LT . Say, the accumulated value of the logarithm of an
-asset at time ti as
+> b) of the price of every pool’s assets instead of the sum as in
+> Uniswap V2. As before, we denote the length of the TWAP
+> to be LT . Say, the accumulated value of the logarithm of an
+> asset at time ti as
 >
 > $A_t = \sum_{i=0}^{j=t_i} \log P_i$
 >
 > This allows a consumer protocol (like a lending protocol) to
-use the geometric mean of the pool as
+> use the geometric mean of the pool as
 >
 > $P_{t_1, t_2} = B^{\frac{A_{t_2}-A_{t_1}}{L_T}}$
 >
 > In effect, the geometric mean of the individual prices can also
-be written as
+> be written as
 >
 > $P_{t_1, t_2} = \sqrt[L_T]{\prod_{i=t_1}^{t_2} P_i}$
 >
->To compare TWAPs with arithmetic mean and geometric
-mean, we assume the price of an asset to be constant (say
-$m_p$) over the TWAP period ($L_T$) and hence TWAPs with both
-arithmetic and geometric means return the same price. We now
-try to manipulate the TWAPs in both cases using the single
-block attack to reflect a price of $(1 + ϵ) · m_p$. In the case of
-the arithmetic mean TWAP, the price of the asset in one block
-has to be manipulated to $(1 + L_T · ϵ) · m_p$. In the case of
-geometric mean TWAP, the price of the asset in one block
-has to be manipulated to $(1 + ϵ)
+> To compare TWAPs with arithmetic mean and geometric
+> mean, we assume the price of an asset to be constant (say
+> $m_p$) over the TWAP period ($L_T$) and hence TWAPs with both
+> arithmetic and geometric means return the same price. We now
+> try to manipulate the TWAPs in both cases using the single
+> block attack to reflect a price of $(1 + ϵ) · m_p$. In the case of
+> the arithmetic mean TWAP, the price of the asset in one block
+> has to be manipulated to $(1 + L_T · ϵ) · m_p$. In the case of
+> geometric mean TWAP, the price of the asset in one block
+> has to be manipulated to $(1 + ϵ)
 L_T · m_p$.
 
 This result in a completely different cost comparison graph, that shows that the single-block attack is never cheaper than the multi-block attack (which itself is really expensive)
 
 ![image](/static/images/blog/twap-oracle/6-cost-comparison-bis.png)
 
-
-If you want to go further on this topic, I can suggest you to read [this article from Euler](https://github.com/euler-xyz/uni-v3-twap-manipulation/blob/master/cost-of-attack.pdf) which calculate the cost of manipulating a UniV3 style TWAP with real numbers 
+If you want to go further on this topic, I can suggest you to read [this article from Euler](https://github.com/euler-xyz/uni-v3-twap-manipulation/blob/master/cost-of-attack.pdf) which calculate the cost of manipulating a UniV3 style TWAP with real numbers
