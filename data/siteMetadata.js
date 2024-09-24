@@ -2,6 +2,7 @@
 const siteMetadata = {
   title: 'An Infected Blog',
   author: 'InfectedCrypto',
+  avatar: '/static/images/avatar.png',
   headerTitle: 'An Infected Blog',
   description: 'A blog about web3 security',
   language: 'en-us',
@@ -10,16 +11,19 @@ const siteMetadata = {
   siteRepo: 'https://github.com/timlrx/tailwind-nextjs-starter-blog',
   siteLogo: '/static/images/logo.png',
   socialBanner: '/static/images/twitter-card.png',
-  mastodon: 'https://mastodon.social/@mastodonuser',
+//   mastodon: 'https://mastodon.social/@mastodonuser',
   email: 'address@yoursite.com',
   github: 'https://github.com/InfectedIsm',
   twitter: 'https://twitter.com/InfectedCrypto',
-  facebook: 'https://facebook.com',
-  youtube: 'https://youtube.com',
-  linkedin: 'https://www.linkedin.com',
-  threads: 'https://www.threads.net',
-  instagram: 'https://www.instagram.com',
+//   facebook: 'https://facebook.com',
+//   youtube: 'https://youtube.com',
+//   linkedin: 'https://www.linkedin.com',
+//   threads: 'https://www.threads.net',
+//   instagram: 'https://www.instagram.com',
   locale: 'en-US',
+  occupation:'Web3 Security Engineer',
+  company: '',
+  location: '',
   analytics: {
     // If you want to use an analytics provider you have to add it to the
     // content security policy in the `next.config.js` file.
