@@ -26,6 +26,7 @@ module.exports = {
       },
       colors: {
         primary: colors.emerald,
+        secondary: colors.sky,
         gray: colors.neutral,
       },
       typography: ({ theme }) => ({
@@ -45,13 +46,28 @@ module.exports = {
             h3: {
               fontWeight: '600',
             },
+            pre: {
+              backgroundColor: theme('colors.gray.800'),
+              borderLeft: `4px solid ${theme('colors.primary.700')}`,
+              paddingLeft: theme('spacing.4'),
+            },
             code: {
-              color: theme('colors.indigo.500'),
+              color: theme('colors.secondary.800'),
+              backgroundColor: theme('colors.gray.200'),
+              borderRadius: theme('borderRadius.md'),
+              padding: '0.1em 0.4em',
+            },
+            'code::before': {
+              content: 'none',
+            },
+            'code::after': {
+              content: 'none',
             },
           },
         },
-        invert: {
+        dark: {
           css: {
+            color: theme('colors.gray.300'),
             a: {
               color: theme('colors.primary.500'),
               '&:hover': {
@@ -61,6 +77,17 @@ module.exports = {
             },
             'h1,h2,h3,h4,h5,h6': {
               color: theme('colors.gray.100'),
+            },
+            pre: {
+              backgroundColor: theme('colors.gray.900'),
+              borderLeft: `4px solid ${theme('colors.primary.700')}`,
+              paddingLeft: theme('spacing.4'),
+            },
+            code: {
+              color: theme('colors.secondary.200'),
+              backgroundColor: theme('colors.gray.800'),
+              borderRadius: theme('borderRadius.md'),
+              padding: '0.1em 0.4em',
             },
           },
         },
