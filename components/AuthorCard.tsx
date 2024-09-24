@@ -46,5 +46,5 @@ const AuthorCard = ({ content }) => {
     </div>
   )
 }
-
+ 
 export default AuthorCard
