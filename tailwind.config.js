@@ -52,8 +52,8 @@ module.exports = {
               paddingLeft: theme('spacing.4'),
             },
             code: {
-              color: theme('colors.secondary.800'),
-              backgroundColor: theme('colors.gray.200'),
+              color: theme('colors.secondary.700'),
+              backgroundColor: theme('colors.gray.300'),
               borderRadius: theme('borderRadius.md'),
               padding: '0.1em 0.4em',
             },
@@ -65,7 +65,7 @@ module.exports = {
             },
           },
         },
-        dark: {
+        light: {
           css: {
             color: theme('colors.gray.300'),
             a: {
@@ -84,7 +84,7 @@ module.exports = {
               paddingLeft: theme('spacing.4'),
             },
             code: {
-              color: theme('colors.secondary.200'),
+              color: theme('colors.red.200'),
               backgroundColor: theme('colors.gray.800'),
               borderRadius: theme('borderRadius.md'),
               padding: '0.1em 0.4em',

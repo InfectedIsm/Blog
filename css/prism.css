@@ -5,149 +5,155 @@
  * Ported for PrismJS by Marc Backes [@themarcba]
  */
 
- code[class*="language-"],
- pre[class*="language-"] {
-	 color: #fdfdfd;
-	 background: none;
-	 font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-	 font-size: 1em;
-	 text-align: left;
-	 white-space: pre;
-	 word-spacing: normal;
-	 word-break: normal;
-	 word-wrap: normal;
-	 line-height: 1.5;
- 
-	 -moz-tab-size: 4;
-	 -o-tab-size: 4;
-	 tab-size: 4;
- 
-	 -webkit-hyphens: none;
-	 -moz-hyphens: none;
-	 -ms-hyphens: none;
-	 hyphens: none;
-	 text-shadow: 0 0 2px #000, 0 0 5px #fdfdfd42, 0 0 2px #0aa3706c, 0 0 10px #0aa37077;
- }
- 
- /* Code blocks */
- pre[class*="language-"] {
-	 padding: 1em;
-	 margin: .5em 0;
-	 overflow: auto;
- }
- 
- :not(pre) > code[class*="language-"],
- pre[class*="language-"] {
-	 background-color: transparent !important;
-	 background-image: linear-gradient(to bottom, #2a2139 75%, #34294f);
- }
- 
- /* Inline code 
+code[class*='language-'],
+pre[class*='language-'] {
+  color: #fdfdfd;
+  background: none;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 1em;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  text-shadow:
+    0 0 2px #000,
+    0 0 5px #fdfdfd42,
+    0 0 2px #0aa3706c,
+    0 0 10px #0aa37077;
+}
+
+/* Code blocks */
+pre[class*='language-'] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+}
+
+:not(pre) > code[class*='language-'],
+pre[class*='language-'] {
+  background-color: transparent !important;
+  background-image: linear-gradient(to bottom, #2a2139 75%, #34294f);
+}
+
+/* Inline code 
  :not(pre) > code[class*="language-"] {
 	 padding: .1em;
 	 border-radius: .3em;
 	 white-space: normal;
  }
  */
- 
- .token.comment,
- .token.block-comment,
- .token.prolog,
- .token.doctype,
- .token.cdata {
-	color: #8e8e8e;
-	text-shadow: none;
-}
- 
- .token.punctuation {
-	 color: #ccc;
-	text-shadow: none;
-}
- 
- .token.tag,
- .token.attr-name,
- .token.namespace,
- .token.number,
- .token.unit,
- .token.hexcode,
- .token.deleted {
-	 color: #0aa370;
-	text-shadow: none;
-}
- 
- .token.property,
- .token.selector {
-	 color: #72f1b8;
-	text-shadow: none;
-}
- 
- .token.function-name {
-	 color: #6196cc;
-	text-shadow: none;
-}
- 
- .token.variable,
- .token.boolean,
- .token.selector .token.id,
- .token.function,
- .token.id {
-	 color: #fdfdfd;
-	text-shadow: none;
+
+.token.comment,
+.token.block-comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8e8e8e;
+  text-shadow: none;
 }
 
- .token.keyword { /* 'function', 'public/private/...' */
-	color: #4eb8a1;
-	text-shadow: none;
+.token.punctuation {
+  color: #ccc;
+  text-shadow: none;
 }
- 
- .token.class-name {
-	 color: #fff5f6;
-	text-shadow: none;
+
+.token.tag,
+.token.attr-name,
+.token.namespace,
+.token.number,
+.token.unit,
+.token.hexcode,
+.token.deleted {
+  color: #0aa370;
+  text-shadow: none;
 }
- 
- .token.constant,
- .token.symbol {
-	 color: #fff5f6;
-	text-shadow: none;
+
+.token.property,
+.token.selector {
+  color: #72f1b8;
+  text-shadow: none;
 }
- 
- .token.important,
- .token.atrule,
- .token.selector .token.class,
- .token.builtin { /* builtin == types*/
-	 color: #489dbe;
-	text-shadow: none;
+
+.token.function-name {
+  color: #6196cc;
+  text-shadow: none;
 }
- 
- .token.string,
- .token.char,
- .token.attr-value,
- .token.regex,
- .token.variable {
-	 color: #489dbe;
-	text-shadow: none;
+
+.token.variable,
+.token.boolean,
+.token.selector .token.id,
+.token.function,
+.token.id {
+  color: #fdfdfd;
+  text-shadow: none;
 }
- 
- .token.operator,
- .token.entity,
- .token.url {
-	 color: #67cdcc;
-	text-shadow: none;
+
+.token.keyword {
+  /* 'function', 'public/private/...' */
+  color: #4eb8a1;
+  text-shadow: none;
 }
- 
- .token.important,
- .token.bold {
-	 font-weight: bold;
- }
- 
- .token.italic {
-	 font-style: italic;
- }
- 
- .token.entity {
-	 cursor: help;
- }
- 
- .token.inserted {
-	 color: green;
- }
+
+.token.class-name {
+  color: #fff5f6;
+  text-shadow: none;
+}
+
+.token.constant,
+.token.symbol {
+  color: #fff5f6;
+  text-shadow: none;
+}
+
+.token.important,
+.token.atrule,
+.token.selector .token.class,
+.token.builtin {
+  /* builtin == types*/
+  color: #489dbe;
+  text-shadow: none;
+}
+
+.token.string,
+.token.char,
+.token.attr-value,
+.token.regex,
+.token.variable {
+  color: #489dbe;
+  text-shadow: none;
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+  color: #67cdcc;
+  text-shadow: none;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.inserted {
+  color: green;
+}
