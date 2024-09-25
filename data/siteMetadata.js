@@ -1,8 +1,8 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
   title: 'An Infected Blog',
-  author: 'InfectedCrypto',
-  avatar: '/static/images/avatar.png',
+  author: 'Infect3d',
+  avatar: '/static/images/avatar3.png',
   headerTitle: 'An Infected Blog',
   description: 'A blog about web3 security',
   language: 'en-us',

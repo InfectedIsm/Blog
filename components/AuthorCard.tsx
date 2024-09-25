@@ -8,17 +8,17 @@ const AuthorCard = ({ content }) => {
   return (
     <div>
       <div className="flex flex-row items-center justify-center space-x-2 pb-8">
-        {/* {avatar && (
+        {avatar && (
           <div className="pr-2 xl:pr-4">
             <Image
               src={avatar}
               alt="avatar"
               width={112}
               height={112}
-              className="h-48 w-48 min-w-48 rounded-full dark:border-2 dark:border-grey-400 md:h-52 md:w-52"
+              className="dark:border-grey-400 h-48 w-48 min-w-48 rounded-full dark:border-2 md:h-52 md:w-52"
             />
           </div>
-        )} */}
+        )}
         <div>
           <h3 className="pb-2 pt-4  text-2xl font-bold leading-8 tracking-tight sm:text-3xl md:text-4xl">
             {author}
