@@ -130,7 +130,7 @@ Then, to overwrite its value it is simple:
 
 ```solidity
     function OverwriteTotalSupply(address pairV2, uint256 newValue) public {
-        uint256 newValue = 5000;
+        newValue = 5000;
         vm.store(address(pairV2), bytes32(uint256(0)), bytes32(newValue));
     }
 ```
