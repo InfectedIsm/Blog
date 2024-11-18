@@ -12,7 +12,7 @@ const siteMetadata = {
   siteLogo: '/static/images/logo.png',
   socialBanner: '/static/images/twitter-card.png',
   //   mastodon: 'https://mastodon.social/@mastodonuser',
-  email: 'address@yoursite.com',
+  email: 'https://twitter.com/messages/compose?recipient_id=1436561550010093574',
   github: 'https://github.com/InfectedIsm',
   twitter: 'https://twitter.com/InfectedCrypto',
   //   facebook: 'https://facebook.com',
