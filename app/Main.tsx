@@ -25,14 +25,14 @@ export default function Home({ posts }) {
             return (
               <li key={slug} className="py-12">
                 <article>
-                  <div className="flex gap-8">
+                  <div className="flex flex-col gap-8 md:flex-row">
                     {images && images[0] && (
                       <div className="flex-shrink-0">
                         <Link href={`/blog/${slug}`}>
                           <img
                             src={images[0]}
                             alt={title}
-                            className="h-48 w-48 rounded-lg object-cover"
+                            className="h-64 w-full rounded-lg object-cover md:h-48 md:w-48"
                           />
                         </Link>
                       </div>
