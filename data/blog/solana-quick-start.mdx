@@ -86,6 +86,8 @@ For each new variable that a program needs, a new data account can be created. O
 
 As you might think, creating a new unique account for each required variable would be very inefficient. Instead, Solana allows developers to create structured storage solutions where multiple values can be stored within a single account.
 
+![Serialize and Deserializer](/static/images/blog/solana-quick-start/serializer.png)
+
 To write to data accounts in a structured way, programs use a **serializer**, and to read it back a **deserializer** is necessary (this process is transparent when using the common Solana framework and libraries). 
 But how are those data accounts created?
 
@@ -93,7 +95,7 @@ Accounts (and therefore data accounts) all have their own address on the blockch
 
 Hopefully, that is not the case, and what happens is that data accounts created from a program (by a program) have a special type of address called a **Program Derived Address** (or **PDA**). PDAs are generated in a deterministic way by [hashing](https://www.geeksforgeeks.org/what-is-hashing/) the program's own address and any optional number of seeds (bytes values), and a bump (you can search for this one later, but its not important right now).
 
-![PDA generation](/static/images/blog/solana-quick-start/image.png)
+![PDA generation](/static/images/blog/solana-quick-start/pda.png)
 
 Because the process is deterministic, programs now have a way to create new variables, and automatically retrieve these variables. Again, all this process is transparent thanks to the available Solana framework and libraries.
 
@@ -199,7 +201,7 @@ Below an illustration showing how token program are organized:
 
 In this architecture, the only program account is the **SPL Token Program**. The other accounts are data accounts that can be modified by the SPL Token Program.
 
-The **SPL Token Program** is the owner of those accounts in the sense that only this program has the right to modify those accounts. This means that to update them, we need to perform a **CPI** to the SPL Token Program, and provide the accounts we want to see updated (as explained in [section 4](https://www.notion.so/Hitchhiker-guide-to-Auditing-Solana-Programs-12d56fd321bd80c897acda2cc22bfc57?pvs=21) above).
+The **SPL Token Program** is the owner of those accounts in the sense that only this program has the right to modify those accounts. This means that to update them, we need to perform a **CPI** to the SPL Token Program, and provide the accounts we want to see updated (as explained in [section 4](#4-programs-and-instructions) above).
 
 Obviously, the SPL Token Program implements access control logic to prevent users to transfer tokens from an account they do not own.
 
@@ -311,7 +313,7 @@ This is basically how will look like most of the Solana project you will encount
 
 [Anchor](https://www.anchor-lang.com/) is a Rust (*and Typescript for tests*) framework developed by [Coral](https://github.com/coral-xyz/anchor) providing tools that helps developers to write secure programs faster. 
 
-The framework contains numerous [macros](https://docs.rs/anchor-lang/latest/anchor_lang/index.html#macros) and [traits](https://docs.rs/anchor-lang/latest/anchor_lang/index.html#traits) (Rust concepts) that implement a lot of important components, such as an account data [serializer and deserializer](https://github.com/Ackee-Blockchain/Solana-Auditors-Bootcamp/blob/master/Lesson-1/README.md#attribute-macro-program) that we talked about in [section 2](https://www.notion.so/Hitchhiker-guide-to-Auditing-Solana-Programs-12d56fd321bd80c897acda2cc22bfc57?pvs=21), [automatic access control checks](https://github.com/Ackee-Blockchain/Solana-Auditors-Bootcamp/blob/master/Lesson-1/README.md#account) on accounts, or an [instruction dispatcher](https://github.com/Ackee-Blockchain/Solana-Auditors-Bootcamp/blob/master/Lesson-1/README.md#attribute-macro-program) routing instructions call to the appropriate logic section.
+The framework contains numerous [macros](https://docs.rs/anchor-lang/latest/anchor_lang/index.html#macros) and [traits](https://docs.rs/anchor-lang/latest/anchor_lang/index.html#traits) (Rust concepts) that implement a lot of important components, such as an account data [serializer and deserializer](https://github.com/Ackee-Blockchain/Solana-Auditors-Bootcamp/blob/master/Lesson-1/README.md#attribute-macro-program) that we talked about in [section 2](#2-account-model), [automatic access control checks](https://github.com/Ackee-Blockchain/Solana-Auditors-Bootcamp/blob/master/Lesson-1/README.md#account) on accounts, or an [instruction dispatcher](https://github.com/Ackee-Blockchain/Solana-Auditors-Bootcamp/blob/master/Lesson-1/README.md#attribute-macro-program) routing instructions call to the appropriate logic section.
 
 As you can see, all of these tools are really important and you might not want to re-develop these components from scratch. For that reason, most of the Solana programs you will encounter use Anchor, and you will need to know its basics.
 
