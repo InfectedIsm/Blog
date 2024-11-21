@@ -93,7 +93,8 @@ But how are those data accounts created?
 
 Accounts (and therefore data accounts) all have their own address on the blockchain, which we can use to access them. While this makes sense for a program to require the address of external data to be able it will need to read, on the contrary this would be pretty inefficient if a program had to store, or request as an input from the user the addresses to access its own state variables.
 
-Hopefully, that is not the case, and what happens is that data accounts created from a program (by a program) have a special type of address called a **Program Derived Address** (or **PDA**). PDAs are generated in a deterministic way by [hashing](https://www.geeksforgeeks.org/what-is-hashing/) the program's own address and any optional number of seeds (bytes values), and a bump (you can search for this one later, but its not important right now).
+Hopefully, that is not the case, and what happens is that data accounts created from a program (by a program) have a special type of address called a **Program Derived Address** (or **PDA**).  
+PDAs are generated in a deterministic way by [hashing](https://www.geeksforgeeks.org/what-is-hashing/) the program's own address and any optional number of seeds (bytes values), and a bump (you can search for this one later, but its not important right now).
 
 ![PDA generation](/static/images/blog/solana-quick-start/pda.png)
 
