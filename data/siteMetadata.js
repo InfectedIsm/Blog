@@ -21,7 +21,7 @@ const siteMetadata = {
   //   threads: 'https://www.threads.net',
   //   instagram: 'https://www.instagram.com',
   locale: 'en-US',
-  occupation: 'Web3 Security Engineer',
+  occupation: 'Web3 Security Researcher',
   company: '',
   location: '',
   analytics: {
