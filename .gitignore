@@ -22,6 +22,9 @@ public/sitemap.xml
 /build
 *.xml
 
+# env files
+.env
+
 # rss feed
 /public/feed.xml
 
@@ -45,3 +48,6 @@ yarn-error.log*
 
 # Contentlayer
 .contentlayer
+
+# project files
+OLD_README.md
