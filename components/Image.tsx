@@ -26,7 +26,7 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
       <div className="cursor-pointer" onClick={openLightbox}>
         <NextImage src={`${basePath || ''}${src}`} alt={alt} {...rest} />
       </div>
-      
+
       {isOpen && (
         <div className="lightbox" onClick={closeLightbox}>
           <div className="lightbox-content" onClick={handleImageClick}>
