@@ -36,7 +36,6 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
       {isOpen && (
         <div
           className="lightbox"
-          onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
           aria-label={`${alt} lightbox view`}
@@ -44,6 +43,7 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
           <button
             className="lightbox-overlay"
             onClick={closeLightbox}
+            onKeyDown={handleKeyDown}
             aria-label="Close lightbox overlay"
           />
           <div className="lightbox-content" role="presentation">
