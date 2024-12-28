@@ -7,33 +7,63 @@ import NextImage, { ImageProps } from 'next/image'
 const basePath = process.env.BASE_PATH
 
 const Image = ({ src, alt, ...rest }: ImageProps) => {
-  // Add state to control lightbox
   const [isOpen, setIsOpen] = useState(false)
 
-  // Handler for opening lightbox
   const openLightbox = () => setIsOpen(true)
-
-  // Handler for closing lightbox
   const closeLightbox = () => setIsOpen(false)
 
-  // Handler for preventing click propagation on image
   const handleImageClick = (e: React.MouseEvent) => {
     e.stopPropagation()
   }
 
+  // Handle keyboard events
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      closeLightbox()
+    }
+    if (e.key === 'Enter') {
+      openLightbox()
+    }
+  }
+
   return (
     <div>
-      <div className="cursor-pointer" onClick={openLightbox}>
+      <button 
+        className="w-full bg-transparent border-0 cursor-pointer p-0" 
+        onClick={openLightbox}
+        onKeyDown={handleKeyDown}
+        aria-label={`Open ${alt} in fullscreen`}
+      >
         <NextImage src={`${basePath || ''}${src}`} alt={alt} {...rest} />
-      </div>
-
+      </button>
+      
       {isOpen && (
-        <div className="lightbox" onClick={closeLightbox}>
-          <div className="lightbox-content" onClick={handleImageClick}>
-            <button className="lightbox-close" onClick={closeLightbox}>
+        <div 
+          className="lightbox" 
+          onClick={closeLightbox}
+          onKeyDown={handleKeyDown}
+          role="dialog"
+          aria-label={`${alt} lightbox view`}
+          tabIndex={-1}
+        >
+          <div 
+            className="lightbox-content" 
+            onClick={handleImageClick}
+            role="presentation"
+          >
+            <button 
+              className="lightbox-close" 
+              onClick={closeLightbox}
+              aria-label="Close lightbox"
+            >
               &times;
             </button>
-            <img src={`${basePath || ''}${src}`} alt={alt} className="max-w-full" />
+            <NextImage 
+              src={`${basePath || ''}${src}`} 
+              alt={alt} 
+              className="max-w-full"
+              {...rest}
+            />
             <p className="lightbox-alt">{alt}</p>
           </div>
         </div>
