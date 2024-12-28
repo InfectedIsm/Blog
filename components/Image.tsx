@@ -28,42 +28,29 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
 
   return (
     <div>
-      <button 
-        className="w-full bg-transparent border-0 cursor-pointer p-0" 
+      <button
+        className="w-full cursor-pointer border-0 bg-transparent p-0"
         onClick={openLightbox}
         onKeyDown={handleKeyDown}
         aria-label={`Open ${alt} in fullscreen`}
       >
         <NextImage src={`${basePath || ''}${src}`} alt={alt} {...rest} />
       </button>
-      
+
       {isOpen && (
-        <div 
-          className="lightbox" 
+        <div
+          className="lightbox"
           onClick={closeLightbox}
           onKeyDown={handleKeyDown}
           role="dialog"
           aria-label={`${alt} lightbox view`}
           tabIndex={-1}
         >
-          <div 
-            className="lightbox-content" 
-            onClick={handleImageClick}
-            role="presentation"
-          >
-            <button 
-              className="lightbox-close" 
-              onClick={closeLightbox}
-              aria-label="Close lightbox"
-            >
+          <div className="lightbox-content" onClick={handleImageClick} role="presentation">
+            <button className="lightbox-close" onClick={closeLightbox} aria-label="Close lightbox">
               &times;
             </button>
-            <NextImage 
-              src={`${basePath || ''}${src}`} 
-              alt={alt} 
-              className="max-w-full"
-              {...rest}
-            />
+            <NextImage src={`${basePath || ''}${src}`} alt={alt} className="max-w-full" {...rest} />
             <p className="lightbox-alt">{alt}</p>
           </div>
         </div>
