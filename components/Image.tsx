@@ -16,13 +16,9 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
     e.stopPropagation()
   }
 
-  // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       closeLightbox()
-    }
-    if (e.key === 'Enter') {
-      openLightbox()
     }
   }
 
@@ -31,7 +27,7 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
       <button
         className="w-full cursor-pointer border-0 bg-transparent p-0"
         onClick={openLightbox}
-        onKeyDown={handleKeyDown}
+        onKeyDown={(e) => e.key === 'Enter' && openLightbox()}
         aria-label={`Open ${alt} in fullscreen`}
       >
         <NextImage src={`${basePath || ''}${src}`} alt={alt} {...rest} />
@@ -41,13 +37,22 @@ const Image = ({ src, alt, ...rest }: ImageProps) => {
         <div
           className="lightbox"
           onClick={closeLightbox}
-          onKeyDown={handleKeyDown}
           role="dialog"
+          aria-modal="true"
           aria-label={`${alt} lightbox view`}
-          tabIndex={-1}
         >
-          <div className="lightbox-content" onClick={handleImageClick} role="presentation">
-            <button className="lightbox-close" onClick={closeLightbox} aria-label="Close lightbox">
+          <button
+            className="lightbox-overlay"
+            onClick={closeLightbox}
+            aria-label="Close lightbox overlay"
+          />
+          <div className="lightbox-content" role="presentation">
+            <button
+              className="lightbox-close"
+              onClick={closeLightbox}
+              onKeyDown={handleKeyDown}
+              aria-label="Close lightbox"
+            >
               &times;
             </button>
             <NextImage src={`${basePath || ''}${src}`} alt={alt} className="max-w-full" {...rest} />
