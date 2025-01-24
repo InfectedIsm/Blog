@@ -1,0 +1,181 @@
+{
+  "main": {
+    "id": "50c5e22fbfe09d2b",
+    "type": "split",
+    "children": [
+      {
+        "id": "5b704be532ac6ad9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b199ffcfa71777c2",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "public/static/images/logo2.png"
+              },
+              "icon": "lucide-image",
+              "title": "logo2"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8cd2dfb84488d0ac",
+    "type": "split",
+    "children": [
+      {
+        "id": "8b358173d32d7fe7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2eca041baab8a439",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "74b88cc72c54bbaf",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "a8ffc13b52eb9bdc",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "c03e7dbc23d489a4",
+    "type": "split",
+    "children": [
+      {
+        "id": "a120fe18cae901d9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "68e4263c6373fb3a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "public/static/images/logo2.png",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for logo2"
+            }
+          },
+          {
+            "id": "7b89fd4de3df4f9c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Welcome.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Welcome"
+            }
+          },
+          {
+            "id": "cf2373a4a9370183",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "b4de05c50e60fe36",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Welcome.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Welcome"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "b199ffcfa71777c2",
+  "lastOpenFiles": [
+    "public/static/images/ocean.jpeg",
+    "public/static/images/sparrowhawk-avatar.jpg",
+    "public/static/images/twitter-card.png",
+    "public/static/images/time-machine.jpg",
+    "public/static/images/report-portfolio.png",
+    "public/static/images/logo2.png",
+    "public/static/images/logo.png",
+    "public/static/images/google.png",
+    "public/static/images/avatar3.png",
+    "public/static/images/avatar2.png",
+    "public/static/images/avatar.png",
+    "data/blog/decentralized-stablecoin.mdx",
+    "data/authors/default.mdx",
+    "data/blog/easy-state-variable-overwriting.mdx",
+    "Welcome.md"
+  ]
+}

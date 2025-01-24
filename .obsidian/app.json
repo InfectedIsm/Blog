@@ -1,0 +1,12 @@
+{
+  "userIgnoreFilters": [
+    "node_modules/",
+    "app/",
+    "components/",
+    "faq/",
+    "css/",
+    "layouts/",
+    "scripts/"
+  ],
+  "showUnsupportedFiles": false
+}
