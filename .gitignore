@@ -52,3 +52,4 @@ yarn-error.log*
 # project files
 OLD_README.md
 tree
+/data/blog/draft
