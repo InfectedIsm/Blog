@@ -16,9 +16,9 @@ images:
 
 - [Introduction](#introduction)
 - [Fundamental AMM Economics](#fundamental-amm-economics)
-- [Formalization of mechanisms](formalization-of-mechanisms)
-- [Generalized Formulas](generalized-formulas)
-- [Comparison of AMM protocols](comparison-of-amm-protocols)
+- [Formalization of mechanisms](#formalization-of-mechanisms)
+- [Generalized Formulas](#generalized-formulas)
+- [Comparison of AMM protocols](#comparison-of-amm-protocols)
 - [AMM Security Considerations](#amm-security-considerations)
 
 
@@ -141,15 +141,15 @@ This chapter from the research paper explores different exploit situations but i
 *The example below differs from the original as there was a mistake in step 2 regarding the new price*
 
 In a pool composed of 2 tokens, $token_A$ and $token_B$ with reserves $r_A$ and $r_B$
-1. **Borrow** from a CDP protocol $x_A$ of $token_A$ such as $x_A.p_A = x_B.p_B$ (where $p$ is the token price in numeraire, or dollars for simplicity) at market price.
+1. **Borrow** from a CDP protocol $x_A$ of $token_A$ such as $x_A.p_A = x_B.p_B$ (where $p$ is the token price in numéraire, or dollars for simplicity) at market price.
 2. **Swap** $x_A$ of $token_A$ for $\alpha .x_B$ of $token_B$ in the AMM.
 	- this will push the price $p_{A/B}$  ($token_A$ in term of $token_B$) lower, to $\frac{r_B -x_B - \Delta_1}{r_A + x_A}$
 3. **Borrow**, from another CDP protocol using the AMM as sole price oracle, $x_A + \Delta_2$ of $token_A$ with  $\alpha .x_B$  of $token_B$ obtained in step (2)
-	- Because $p_{A/B}$ has been pushed down, now $token_A$ is worth more less, making it possible to borrow more $x_A$ than in step (1)
-4. **Repay** the flashloan with $x_A$ of $token_A$
+	- Because $p_{A/B}$ has been pushed down, now $token_A$ is worth less, making it possible to borrow more $x_A$ than in step (1)
+4. **Repay** the flash loan with $x_A$ of $token_A$
 	- The profit is equal to $\Delta_2$ (minus fees) 
 
-This type of attack can be solved using a TWAP or a decentralized network of oracles (e.g., Chainlink, Pyth)
+**This type of attack can be solved using a TWAP or a decentralized network of oracles (e.g., Chainlink, Pyth)**
 ## Rug pull 
 
 1. **Mint** a new token XYZ
@@ -160,7 +160,7 @@ This type of attack can be solved using a TWAP or a decentralized network of ora
 	- This will change the pool reserve to $R'=(r'_{XYZ}; r'_{ETH})$ 
 	- Where $r'_{XYZ} = r_{XYZ} - \Delta r_{XYZ}$ and $r'_{ETH} = r_{ETH} + \Delta r_{ETH}$
 	- So there will be less XYZ in the pool, and more ETH as people buy XYZ
-4. **Withdraw liquidity** by surrending LP tokens and receive:
+4. **Withdraw liquidity** by surrending LP tokens and receiving:
 	- $x'_{XYZ} = x_{XYZ} - \Delta_{1}$ 
 	- and  $x'_{ETH} = x_{ETH} + \Delta_{2}$
 	- where $\Delta_{1}, \Delta_{2} > 0$
