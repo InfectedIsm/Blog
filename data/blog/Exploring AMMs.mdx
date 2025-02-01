@@ -1,0 +1,199 @@
+---
+title: Exploring AMMs
+date: 2025-03-01
+tags:
+  - research
+  - DeFi
+  - analysis
+draft: false
+summary: This blog post is a condensed form of a research paper from 2023 exploring the landscape of AMMs
+images:
+  - /static/images/blog/amms/image-summary.png
+---
+
+*This blog post is heavily inspired by [this research paper](https://arxiv.org/abs/2103.12732) and primarily summarizes its content. Minor modifications and additions have been made to improve its accessibility.*
+### Table of Content
+
+- [Introduction](#introduction)
+- [Fundamental AMM Economics](#fundamental-amm-economics)
+- [Formalization of mechanisms](formalization-of-mechanisms)
+- [Generalized Formulas](generalized-formulas)
+- [Comparison of AMM protocols](comparison-of-amm-protocols)
+- [AMM Security Considerations](#amm-security-considerations)
+
+
+![summary of an AMM](/static/images/blog/amms/image-summary.png)
+# Introduction
+
+AMMs stand for **Automated Market Makers** and are an underlying brick of **Decentralized Exchanges** (DEXs).  
+
+They revolutionized the way people trade assets by employing a **peer-to-pool method that determines prices algorithmically** rather than matching buy and sell sides through a traditional order book.  This makes AMMs easily decentralized, automated, and continuously running.  
+
+Besides those qualities, AMMs have some **drawbacks**: possible high **slippage** for traders, and **impermanent loss** for liquidity providers.  
+
+**Slippage is defined as the difference between the spot price and the realized price** of a trade. The larger the quantity of assets withdrawn from the pool relative to its available liquidity, the greater the slippage.
+
+**Impermanent loss is defined as the difference in value of the assets in the pool compared to their value if they were held outside of the pool.** This comes from the fact that the pool constantly rebalances the quantity of its assets to keep the value of each one equivalent. If asset A depreciates relative to asset B, the pool will "automatically" increase the amount of A while decreasing the amount of B until their values are matched.
+
+These drawbacks **come from the nature of the implemented algorithm** of AMMs: price moves along predefined trajectories conditioned by the number of assets in the pool.
+
+**Uniswap**, which is the most used AMM, **introduced the constant product formula** as the foundation of the protocol: the **pool**, composed of two distinct assets A and B, is initialized with a quantity $r_A$ and $r_B$ of tokens, such that $r_A/r_B$ is equal to the price relation A/B.  
+Then, **every action in the pool must always satisfy a set of conservation function invariants**. The simplest and most renowned is the Uniswap constant-product formula  $x.y = k$, where $x$ and $y$ equal $r_A$ and $r_B$.  
+# Fundamental AMM Economics
+# Actors
+**4 key participants** interact within the AMM ecosystem:
+- **Liquidity Providers (LPs):** Provide liquidity to a pool, allowing other users to trade. They receive shares representing the value of their deposit, which they can surrender to get back the equivalent amount of liquidity at the time of the action.  
+- **Traders:** these users trade with the pools, and pay fees that are directed to LPs and the protocol.  
+- **Arbitrageurs:** Compare price assets over different platforms (DEX, CEX, and others) to find profit opportunities through price discrepancy. This mechanism ensures consistency of asset prices.  
+- **Protocol/Governance:** Usually paid through the fees, and thus is financially incentivized to provide the best experience to each party.
+# Assets
+We can also find **4 types of assets**:
+- **Risk assets:** Primary types of assets; these are the assets that the AMM provides liquidity for traders, thanks to liquidity providers. 
+- **Base assets:** Rarely seen nowadays, but some protocols had pools of Risk/Base assets.  
+  E.g., every Uniswap V1 pool had as a base asset ETH, Bancor had its own token BNC as base asset. But nowadays, many AMMs still follow a similar pattern, with pools having either a stablecoin (USDC/USDT/DAI) or ETH/WETH as one side of the pool.
+- **LP shares:** Minted to liquidity providers when depositing into a pool. Shares represent the ownership of a portion of the pool.
+- **Protocol tokens:** Usually distributed as rewards to incentivize users to perform certain actions benefiting the protocol. Sometimes serve as a governance token, or gives advantages to holders. Most can be openly tradeable.
+## Rewards
+AMMs often use those rewards as incentives to encourage participation and contribution:
+- **Liquidity rewards:** These come from trading fees and are distributed to liquidity providers. They are a way to compensate for the immobilization of assets.
+- **Governance right:** Protocol tokens are often distributed to incentivize actions in the protocol (e.g. trading, liquidity provisioning, staking)
+- **Staking rewards:** Staking protocol tokens to receive another reward (e.g. lesser fees for traders, more fees for LPs)
+## Explicit costs
+Interacting with AMMs incurs various costs, either as a way to generate revenue, or to incentivize specific behaviors:
+- **Swap fees:** Charged to traders interacting with liquidity pools to compensate liquidity providers for supplying assets. A small portion of the fees can also be charged as protocol revenue.
+- **Liquidity withdrawal penalty:** AMMs wants to incentivize long-term and balanced liquidity, for that reason, penalties in the form of reduced rewards, or even fees can be applied.
+- **Gas fees:** Inherent to the chain on which the protocol is hosted.
+## Implicit costs
+These costs are considered implicit as they emerge from the design itself rather than being purposefully implemented.
+- **Slippage:** Difference between realized price on swap execution and expected price. Emerge from the non linearity of conservation function invariants. Constant-sum AMM do not suffer slippage.
+- **Impermanent loss:** Difference between value of assets when held outside and inside of the pool. Also emerge from the conservation function invariants, automatically rebalancing assets to keep their relative value to each others.
+# Formalization of mechanisms
+**Blockchains are usually modeled as state transition systems**. In this representation, a pool has a state that can be described by the following parameters:
+- **$r_k$** : the **quantity (reserve) of token** $k$, for $k=1,...,n$, where each $k$ represents a different token
+- **$p_k$** : the **price** of token $k$
+- **$C$** : **conservation function invariants**. Mathematical rule that governs how trades can occur, such as Uniswap's famous constant product formula.
+- **$\Omega$** : a set of protocol **hyperparameters** (e.g., buy/sell fees)
+
+Some protocols will implement the same $C$ or $\Omega$  for every pool (e.g Uniswap V2), while **others will allow more granularity** in the configuration of the pools (Uniswap V3/4, Curve Balancer, …)
+
+**While  $r_k$  and  $p_k$ changes with almost every actions** in a pool (swap, liquidity provision), $\Omega$ is usually **fixed at pool creation**, and $C$ by definition is to **remain constant** over the life of the pool (even though trading fees can change it)
+
+We can still get these **general rules** from AMMs:
+- The price of token $p_k$ stays constant for *pure* liquidity provision/withdrawal
+- The invariants stays constant for *pure* swapping activities
+
+*Pure* means that we are not factoring in fees, as they **imply an additional operation**: 
+- **First a swap** - given amount $x_1$, we calculate an amount $x_2$ that must be returned while preserving the pool invariant.
+- **Then fees** - which are deducted from $x_2$, the trader receiving $x_2 - f$, while $f$ remains in the pool.
+**While the first action do preserves the invariant equality, the second do not**.
+
+Finally, the price of a token can only stay constant when assets are deposited **proportionate to the current reserve ratio** ($r_1/r_2$), as the price is directly derived from these parameters.
+# Generalized Formulas
+### Swap
+A swap of $x_1$ tokens for $x_2$ tokens in a pool with a reserve of $(r_1,r_2)$ tokens can be decomposed as the following steps:
+1) The pool receives $x_1$ and update the reserve quantities: 
+	- $r_1'=r_1 + x_1$
+2) Using the conservation function invariants $C$ compute the new reserve $r_2'$
+	- $r_2' = f(x_1, {r_k}; C)$   
+3) Send to the user the difference:
+	- $x_2=r_2 - r_2'$ 
+### Slippage
+Slippage measure the deviation between the realized price $x'_1/x'_2$ and the spot price $p_{1/2}$ before the swap occurred $$S(x_1,{r_k};C) = \frac{x'_1/x'_2}{p_{1/2}} - 1$$
+### Impermanent loss
+Impermanent loss measure the difference in value of the assets in the pool compared to their value if they were held outside of the pool.
+$$IL = \sum\limits_k \frac{x_k^o.r_k}{x_k.r_k}-1$$
+Where $x_k^o$  are the amount of assets deposited at deposit time, and $x_k$ the amount of assets in the pool at measurement time
+# Comparison of AMM protocols
+### Uniswap V2
+- Liquidity pools are always composed of exactly two assets
+- Protocol assumes that the reserves of the two assets always have the same value: $r_1 . p_1 = r_2 . p_2$
+- Conservation function invariants: $$C= r_1.r_2$$
+- This invariant function is only verified for pure swap, the deduction of fees changes this invariant, which become: $$C \ge r_1.r_2$$
+### Uniswap V3
+- Uniswap V3 enhances V2 by allowing the liquidity provision to be concentrated on a fraction of the bonding curve, between two chosen prices (also called *ticks*). This means that every segment of the bonding curve have its own $C$.
+- Increasing the liquidity on a specific segment of the curve (price range) allows to reduce the slippage on that range.
+- The conservation function invariant for the entire bonding curve is merely complex.
+	- But if we look at C for the active tick range, its the same as Uniswap V2.
+	- For all other tick ranges, liquidity is one-sided (only one asset available)
+### Uniswap V4
+- Uniswap V4 AMM is inherited from Uniswap V3 and is equivalent.
+- But a new concept has been added: Hooks. 
+	- Hooks are functions that can be called before and after specific actions: liquidity update, swap, and more. 
+	- Hooks can overwrite the entire logic of the AMM, allowing custom invariants to be implemented by the developers.
+### Balancer
+- Balancer allow each pool to have more than two assets. Each asset reserve $r_k$ is assigned with a weight $w_k$ at pool creation where $\sum\limits_{k}w_k = 1$   
+- Weights is an hyperparameter that do not change with swap/deposits, they represent the percentage of value that the reserve of that asset must maintain in the pool.
+- Balancer propose different [kind of pools](https://docs.balancer.fi/concepts/explore-available-balancer-pools/)
+- One of these called the *Liquidity Bootstraping Pool* allow to configure changing weights over time
+- Uniswap is a special case of this with $w_1=w_2=\frac{1}{2}$
+- Conservation function invariants: $$ C = \prod\limits_{k}r_k^{w_k}$$
+### Curve
+- In Curve, liquidity pools support two ore more assets with a similar peg
+- Similarly to Balancer, Curve propose different type of pools, which is controlled with an hyperparameter called the Amplification Coefficient $A$, basically defining if the if the bonding curve will behave like a constant-product or constant-sum.
+	- When $A\to 0$ the constant-sum term disappear compared to the constant-product term
+	- When $A \to \infty$ the constant-sum take over the formula.
+- Conservation function invariants: $$A(\frac{\sum_{k}r_k}{C}-1) = \frac{(\frac{C}{n})^n}{\prod_{k}r_k}-1$$
+# AMM Security Considerations
+
+This chapter from the research paper explores different exploit situations but is far from exhaustive. If you want to go further in AMM vulnerabilities, I suggest you [this great good article](https://mirror.xyz/millietez.eth/ixD3xe-Q7JQowYcIFmGKxkPae_C5tCN9kWn9jXUhnKk).
+
+## Flashloan funded attacks
+*The example below differs from the original as there was a mistake in step 2 regarding the new price*
+
+In a pool composed of 2 tokens, $token_A$ and $token_B$ with reserves $r_A$ and $r_B$
+1. **Borrow** from a CDP protocol $x_A$ of $token_A$ such as $x_A.p_A = x_B.p_B$ (where $p$ is the token price in numeraire, or dollars for simplicity) at market price.
+2. **Swap** $x_A$ of $token_A$ for $\alpha .x_B$ of $token_B$ in the AMM.
+	- this will push the price $p_{A/B}$  ($token_A$ in term of $token_B$) lower, to $\frac{r_B -x_B - \Delta_1}{r_A + x_A}$
+3. **Borrow**, from another CDP protocol using the AMM as sole price oracle, $x_A + \Delta_2$ of $token_A$ with  $\alpha .x_B$  of $token_B$ obtained in step (2)
+	- Because $p_{A/B}$ has been pushed down, now $token_A$ is worth more less, making it possible to borrow more $x_A$ than in step (1)
+4. **Repay** the flashloan with $x_A$ of $token_A$
+	- The profit is equal to $\Delta_2$ (minus fees) 
+
+This type of attack can be solved using a TWAP or a decentralized network of oracles (e.g., Chainlink, Pyth)
+## Rug pull 
+
+1. **Mint** a new token XYZ
+2. **Create** a pool with $x_{XYZ}$  XYZ and $x_{ETH}$ ETH (could be another one)
+	- There's now a pool with reserves $R=(r_{XYZ}; r_{ETH})$ 
+	- Receiving LP tokens for the deposited liquidity 
+3. **Attract people** into buying the XYZ token
+	- This will change the pool reserve to $R'=(r'_{XYZ}; r'_{ETH})$ 
+	- Where $r'_{XYZ} = r_{XYZ} - \Delta r_{XYZ}$ and $r'_{ETH} = r_{ETH} + \Delta r_{ETH}$
+	- So there will be less XYZ in the pool, and more ETH as people buy XYZ
+4. **Withdraw liquidity** by surrending LP tokens and receive:
+	- $x'_{XYZ} = x_{XYZ} - \Delta_{1}$ 
+	- and  $x'_{ETH} = x_{ETH} + \Delta_{2}$
+	- where $\Delta_{1}, \Delta_{2} > 0$
+5) **Swap** the remaining XYZ tokens for more ETH
+
+**AMMs and launchpad protocols can mitigate this by forcing a period during which liquidity is locked and cannot be withdrawn**
+## Price Sandwich Attack
+
+1. User A wishes to purchase $x_A$ XYZ whose spot price is $p_1$ on an AMM with gas fee
+2. User B sees the transaction in the mempool and front-runs by buying  XYZ with a higher gas fee
+3. User B and A's transactions are executed sequentially at a respective average price of $p_B$ and $p_A$, pushing XYZ's spot price to $p_2$ where $p_2 > p_A > p_B > p_1$ due to slippage
+4. User B back-run by selling $x_B$ XYZ at an average price of $p_B'$ where $p_2 > p_B' > p_B$ because of slippage
+5. User B made a profit of $profit = x_B.(p_B' - p_B)$ , minus fees
+
+**There are multiple way to mitigate this type of attack:**
+- allow user A to set a slippage parameter, although this will only reduce the harm, but the maximum loss will be configurable
+- Some protocols, like CoW Swap create alternative mempools incentivizing block builders to redistribute most of the slippage to the trader
+- Some L2s have private mempools, making this attack near to impossible
+## Sandwich LP attack
+
+1. User want to buy $x_A$ of $tokens_A$  with $x_B$ of $tokens_B$ in an AMM pool containing $r_A$ and $r_B$ tokens 
+2. LP sees the User's transaction and front-run it  by withdrawing $k.r_A$ and $k.r_B$ tokens with $k<1$ 
+	- the pool has less liquidity than before, increasing effects of slippage
+	- the reserves are  $r_A' = (1-k).r_A$ and $r_B' = (1-k).r_B$
+3. User's transaction is then executed with a worse execution price than expected
+	- the pool reserves are now $r_A' = (1-k).r_A - x_A$ and $r_B' = (1-k).r_B + x_B$
+4. LP back-run and re-provide liquidity to the pool:
+	-  for $tokens_A$ he provides $k.r_A$ 
+	-  for $tokens_B$ he provides $k\frac{r_B'}{r_A'}$ , which is computed from the new AMM price
+5. LP still has $x_B - k\frac{r_B'}{r_A'}$ of $tokens_B$ and swap this for some $tokens_A$, securing a profit
+
+
+
+*If you liked this article, you'll probably want to check the original paper available [at the top](#)
+
+
