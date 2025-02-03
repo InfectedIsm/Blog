@@ -74,7 +74,7 @@ These costs are considered implicit as they emerge from the design itself rather
 - **$C$** : **conservation function invariants**. Mathematical rule that governs how trades can occur, such as Uniswap's famous constant product formula.
 - **$\Omega$** : a set of protocol **hyperparameters** (e.g., buy/sell fees)
 
-Some protocols will implement the same $C$ or $\Omega$  for every pool (e.g Uniswap V2), while **others will allow more granularity** in the configuration of the pools (Uniswap V3/4, Curve Balancer, …)
+Some protocols will implement the same $C$ or $\Omega$  for every pool (e.g Uniswap V2), while **others will allow more granularity** in the configuration of the pools (Uniswap V3/4, Curve, Balancer, …)
 
 **While  $r_k$  and  $p_k$ changes with almost every actions** in a pool (swap, liquidity provision), $\Omega$ is usually **fixed at pool creation**, and $C$ by definition is to **remain constant** over the life of the pool (even though trading fees can change it)
 
@@ -98,10 +98,14 @@ A swap of $x_1$ tokens for $x_2$ tokens in a pool with a reserve of $(r_1,r_2)$ 
 3) Send to the user the difference:
 	- $x_2=r_2 - r_2'$ 
 ### Slippage
-Slippage measure the deviation between the realized price $x'_1/x'_2$ and the spot price $p_{1/2}$ before the swap occurred $$S(x_1,{r_k};C) = \frac{x'_1/x'_2}{p_{1/2}} - 1$$
+Slippage measure the deviation between the realized price $x'_1/x'_2$ and the spot price $p_{1/2}$ before the swap occurred  
+
+$$S(x_1,{r_k};C) = \frac{x'_1/x'_2}{p_{1/2}} - 1$$
 ### Impermanent loss
-Impermanent loss measure the difference in value of the assets in the pool compared to their value if they were held outside of the pool.
+Impermanent loss measure the difference in value of the assets in the pool compared to their value if they were held outside of the pool.  
+
 $$IL = \sum\limits_k \frac{x_k^o.r_k}{x_k.r_k}-1$$
+
 Where $x_k^o$  are the amount of assets deposited at deposit time, and $x_k$ the amount of assets in the pool at measurement time
 # Comparison of AMM protocols
 ### Uniswap V2
@@ -133,6 +137,7 @@ Where $x_k^o$  are the amount of assets deposited at deposit time, and $x_k$ the
 	- When $A\to 0$ the constant-sum term disappear compared to the constant-product term
 	- When $A \to \infty$ the constant-sum take over the formula.
 - Conservation function invariants: $$A(\frac{\sum_{k}r_k}{C}-1) = \frac{(\frac{C}{n})^n}{\prod_{k}r_k}-1$$
+
 # AMM Security Considerations
 
 This chapter from the research paper explores different exploit situations but is far from exhaustive. If you want to go further in AMM vulnerabilities, I suggest you [this great good article](https://mirror.xyz/millietez.eth/ixD3xe-Q7JQowYcIFmGKxkPae_C5tCN9kWn9jXUhnKk).
@@ -193,7 +198,8 @@ In a pool composed of 2 tokens, $token_A$ and $token_B$ with reserves $r_A$ and 
 5. LP still has $x_B - k\frac{r_B'}{r_A'}$ of $tokens_B$ and swap this for some $tokens_A$, securing a profit
 
 
+### Thank you for reading this blog post.
 
-*If you liked this article, you'll probably want to check the original paper available [at the top](#)
+*If you liked this article, you'll probably want to check the original paper available [at the top](#) which provides a lot more details about the equations*
 
 
