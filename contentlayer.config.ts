@@ -81,9 +81,14 @@ function createSearchIndex(allBlogs) {
     siteMetadata?.search?.provider === 'kbar' &&
     siteMetadata.search.kbarConfig.searchDocumentsPath
   ) {
+    const searchContent = allCoreContent(sortPosts(allBlogs)).map((post) => ({
+      ...post,
+      content: post.body.raw, // Add the full content
+    }))
+
     writeFileSync(
       `public/${siteMetadata.search.kbarConfig.searchDocumentsPath}`,
-      JSON.stringify(allCoreContent(sortPosts(allBlogs)))
+      JSON.stringify(searchContent)
     )
     console.log('Local search index generated...')
   }
