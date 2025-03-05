@@ -345,7 +345,7 @@ pub mod basic_program {
 }
 ```
 
-`declare_id!()` is a [function-like macro](https://www.rareskills.io/post/rust-function-like-macro) (basically a powerful tool that inject new code before compilation) used to define a program’s on-chain address. You don’t need to no more about it, as this is automatically populated when creating a program with Anchor CLI.
+`declare_id!()` is a [function-like macro](https://www.rareskills.io/post/rust-function-like-macro) (basically a powerful tool that inject new code before compilation) used to define a program’s on-chain address. You don’t need to know more about it, as this is automatically populated when creating a program with Anchor CLI.
 
 [`#[program]`](https://github.com/Ackee-Blockchain/Solana-Auditors-Bootcamp/blob/master/Lesson-1/README.md#attribute-macro-program) is an [attribute-like macro](https://www.rareskills.io/post/rust-attribute-derive-macro) (similar to the other macro, but applying over structs) that creates a low-level dispatcher that takes transactions/CPI and redirect them to the correct location in the program code to execute the requested function. 
 
