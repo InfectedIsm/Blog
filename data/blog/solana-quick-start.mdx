@@ -154,12 +154,12 @@ Here's an example I've borrowed from [this lesson](https://www.rareskills.io/pos
 ```rust
 pub fn send_sol(ctx: Context<SendSol>, amount: u64) -> Result<()> {  
     let cpi_context = CpiContext::new(                   // building the CPI Context:
-        ctx.accounts.system_program.to_account_info(),   //(1) address of the program
-        system_program::Transfer {                       //(2) data required by the program
-            from: ctx.accounts.signer.to_account_info(), //(2)
-            to: ctx.accounts.recipient.to_account_info(),//(2)
-        }
-    );
+            ctx.accounts.system_program.to_account_info(),   //(1) address of the program
+            system_program::Transfer {                       //(2) data required by the program
+                from: ctx.accounts.signer.to_account_info(), //(2)
+                to: ctx.accounts.recipient.to_account_info(),//(2)
+            }
+        );
     
     // calling the program with the context (and an additional parameter `amount`)
     let result = system_program::transfer(cpi_context, amount); 
