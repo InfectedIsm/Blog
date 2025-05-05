@@ -22,7 +22,7 @@ const siteMetadata = {
   //   instagram: 'https://www.instagram.com',
   locale: 'en-US',
   occupation: 'Web3 Security Researcher',
-  company: 'Open to inquiries — feel free to reach out',
+  company: 'feel free to reach out',
   location: '',
   analytics: {
     // If you want to use an analytics provider you have to add it to the
